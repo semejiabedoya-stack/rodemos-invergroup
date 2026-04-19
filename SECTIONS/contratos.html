@@ -1,0 +1,64 @@
+<header><h1>Generador de Contratos</h1></header>
+
+<div class="card">
+    <h3>Configuración del Arrendamiento</h3>
+    <div class="admin-form">
+        <div class="grid-inputs">
+            <div class="input-group">
+                <label>Seleccionar Cliente</label>
+                <select id="con-cliente">
+                    <option value="">-- Seleccione un cliente registrado --</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Seleccionar Vehículo</label>
+                <select id="con-moto">
+                    <option value="">-- Seleccione placa/modelo --</option>
+                </select>
+            </div>
+        </div>
+        <button type="button" onclick="previsualizarContrato()" class="btn-action">Generar Previsualización</button>
+    </div>
+</div>
+
+<div id="visor-contrato-real" class="card" style="display: none; background: white; color: black; font-family: 'Times New Roman', serif;">
+    <div id="documento-imprimible" style="padding: 20px; line-height: 1.6;">
+        <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
+            <h2 style="margin: 0;">CONTRATO DE ARRENDAMIENTO DE MOTOCICLETA</h2>
+            <p style="margin: 5px 0;"><b>RODEMOS INVERGROUP S.A.S</b></p>
+        </div>
+
+        <p>En la ciudad de Medellín, a los <span id="out-fecha"></span>, se celebra el presente contrato entre <b>RODEMOS INVERGROUP</b> (El Arrendador) y el Sr(a). <b id="out-cliente"></b> identificado con <b id="out-tipo"></b> número <b id="out-doc"></b> (El Arrendatario).</p>
+
+        <h4>DATOS DEL VEHÍCULO:</h4>
+        <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+            <tr><td style="border: 1px solid #000; padding: 5px;"><b>REFERENCIA:</b></td><td id="out-moto-ref" style="border: 1px solid #000; padding: 5px;"></td></tr>
+            <tr><td style="border: 1px solid #000; padding: 5px;"><b>PLACA:</b></td><td id="out-moto-placa" style="border: 1px solid #000; padding: 5px;"></td></tr>
+            <tr><td style="border: 1px solid #000; padding: 5px;"><b>N° MOTOR:</b></td><td id="out-moto-motor" style="border: 1px solid #000; padding: 5px;"></td></tr>
+            <tr><td style="border: 1px solid #000; padding: 5px;"><b>N° CHASIS:</b></td><td id="out-moto-chasis" style="border: 1px solid #000; padding: 5px;"></td></tr>
+        </table>
+
+        <div style="font-size: 0.9rem; text-align: justify;">
+            <p><b>CLÁUSULA PRIMERA:</b> El vehículo se entrega en perfecto estado mecánico y estético. El arrendatario se compromete a devolverlo en las mismas condiciones.</p>
+            <p><b>CLÁUSULA SEGUNDA:</b> El uso del vehículo es personal. Queda prohibido el subarriendo o el uso para actividades ilícitas.</p>
+        </div>
+
+        <div style="margin-top: 50px; display: flex; justify-content: space-between;">
+            <div style="border-top: 1px solid #000; width: 45%; text-align: center;">ARRENDADOR</div>
+            <div style="border-top: 1px solid #000; width: 45%; text-align: center;">ARRENDATARIO</div>
+        </div>
+    </div>
+    
+    <button onclick="window.print()" class="btn-action" style="margin-top: 20px; background: #000;">Imprimir Contrato</button>
+</div>
+
+<style>
+    /* Ocultar todo lo demás al imprimir */
+    @media print {
+        body * { visibility: hidden; }
+        #documento-imprimible, #documento-imprimible * { visibility: visible; }
+        #documento-imprimible { position: absolute; left: 0; top: 0; width: 100%; }
+        .sidebar, .btn-action, .card:not(#visor-contrato-real) { display: none !important; }
+    }
+</style>

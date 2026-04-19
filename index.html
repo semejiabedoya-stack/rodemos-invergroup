@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rodemos Invergroup - Gestión Profesional</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <aside class="sidebar" id="main-sidebar">
+        <div class="logo">
+            <h2>RODEMOS</h2>
+            <p style="font-size: 10px; color: #888; text-align: center; margin-top: -35px; margin-bottom: 30px;">INVERGROUP</p>
+        </div>
+        <nav>
+            <button class="nav-btn active" onclick="loadPage('inicio')">🏠 Inicio</button>
+            <button class="nav-btn" onclick="loadPage('clientes')">👤 Clientes</button>
+            <button class="nav-btn" onclick="loadPage('motos')">🏍️ Motos</button>
+            <button class="nav-btn" onclick="loadPage('contratos')">📄 Contratos</button>
+        </nav>
+    </aside>
+
+    <main class="main-content" id="main-view">
+        <div id="content-area">
+            </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        // 1. ANALIZAR LA URL (Detectar si viene del QR)
+        const params = new URLSearchParams(window.location.search);
+        const modoCamara = params.get('mode') === 'camera';
+        const idViculado = params.get('id');
+
+        if (modoCamara) {
+            // COMPORTAMIENTO PARA EL CELULAR
+            document.getElementById('main-sidebar').style.display = 'none';
+            document.getElementById('main-view').style.padding = '0';
+            
+            // Forzamos la carga de la sección de cámara simplificada
+            setTimeout(() => {
+                loadPage('carga-movil');
+            }, 200);
+
+            console.log("Modo Cámara Activo para cliente: " + idViculado);
+        } else {
+            // COMPORTAMIENTO PARA EL PC
+            window.onload = () => loadPage('inicio');
+        }
+
+        // 2. CANAL DE COMUNICACIÓN EN TIEMPO REAL (BroadcastChannel)
+        // Este canal escucha lo que el celular envía y lo inyecta en el PC
+        const canalRodemos = new BroadcastChannel('canal_rodemos');
+        
+        canalRodemos.onmessage = (event) => {
+            const { id, fotos } = event.data;
+            
+            // Validar que el cliente abierto en el PC sea el mismo que el del celular
+            const inputDocPC = document.getElementById('cli-doc');
+            const ccActualEnPC = inputDocPC ? inputDocPC.value : null;
+
+            if (id === ccActualEnPC) {
+                // Inyectamos las fotos recibidas en la variable global del PC
+                if (typeof fotosTemp !== 'undefined') {
+                    fotosTemp = { ...fotosTemp, ...fotos };
+                    
+                    // Feedback visual en el PC
+                    alert("📸 ¡Fotos recibidas desde el celular para la CC: " + id + "!");
+                    
+                    // Cerrar el modal del QR automáticamente
+                    const modalQR = document.getElementById('modal-qr');
+                    if (modalQR) modalQR.classList.remove('show');
+                }
+            } else {
+                console.warn("Se recibieron fotos pero el ID no coincide con el cliente abierto.");
+            }
+        };
+
+        // 3. LOG DE RED
+        console.log("Sistema Rodemos corriendo en IP local: 192.168.1.8");
+    </script>
+</body>
+</html>
