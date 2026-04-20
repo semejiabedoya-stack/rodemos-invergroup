@@ -5,71 +5,92 @@
     --text-main: #1d1d1f;
     --text-dim: #86868b;
     --border: #d2d2d7;
-    --excel-green: #217346;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
-/* CORRECCIÓN: Quitamos overflow hidden para que el cel pueda hacer scroll */
 body { 
     background: var(--apple-bg); 
-    color: var(--text-main); 
     display: flex; 
-    min-height: 100vh; 
+    height: 100vh; 
+    overflow: hidden; 
 }
 
-/* Sidebar */
-.sidebar { width: 260px; background: white; border-right: 1px solid var(--border); padding: 30px 20px; flex-shrink: 0; }
-.logo h2 { color: var(--primary-red); text-align: center; margin-bottom: 5px; font-weight: 800; letter-spacing: -1px; }
+/* Sidebar Fija */
+.sidebar { 
+    width: 260px; 
+    background: white; 
+    border-right: 1px solid var(--border); 
+    padding: 30px 20px; 
+    display: flex;
+    flex-direction: column;
+}
 
-nav { display: flex; flex-direction: column; gap: 8px; margin-top: 30px; }
-.nav-btn { background: none; border: none; color: var(--text-dim); padding: 14px; text-align: left; cursor: pointer; border-radius: 12px; font-weight: 600; transition: 0.2s; width: 100%; }
-.nav-btn.active, .nav-btn:hover { background: var(--primary-red); color: white; }
+.main-content { 
+    flex: 1; 
+    padding: 40px; 
+    overflow-y: auto; 
+}
 
-/* Contenedor Principal */
-.main-content { flex: 1; padding: 40px; width: 100%; }
-.card { background: white; padding: 30px; border-radius: 20px; border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.03); margin-bottom: 25px; }
+/* Tarjetas y Grids */
+.card { 
+    background: white; 
+    padding: 30px; 
+    border-radius: 20px; 
+    border: 1px solid var(--border); 
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03); 
+    margin-bottom: 25px; 
+}
 
-/* Inputs y Grids */
-.grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.grid-inputs { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 20px; 
+    margin-bottom: 20px; 
+}
+
 .input-group { display: flex; flex-direction: column; gap: 6px; }
 .input-group label { font-size: 0.7rem; color: var(--text-dim); font-weight: 700; text-transform: uppercase; }
-input { border: 1px solid var(--border); padding: 12px; border-radius: 10px; font-size: 1rem; transition: 0.2s; width: 100%; }
-input:focus { border-color: var(--primary-red); outline: none; box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.1); }
 
-/* Botones */
-.btn-action { background: var(--primary-red); color: white; border: none; padding: 16px; border-radius: 14px; cursor: pointer; font-weight: 700; width: 100%; transition: 0.3s; }
-.btn-action:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(211, 47, 47, 0.3); }
+input { 
+    border: 1px solid var(--border); 
+    padding: 12px; 
+    border-radius: 10px; 
+    font-size: 1rem; 
+    width: 100%;
+}
 
-/* Listado de Documentos (Fotos) */
+/* Botones como los tenías */
+.btn-action { 
+    background: black; 
+    color: white; 
+    border: none; 
+    padding: 16px; 
+    border-radius: 14px; 
+    cursor: pointer; 
+    font-weight: 700; 
+    width: 100%; 
+}
+
 .doc-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
-.doc-item { background: #fbfbfd; padding: 12px 18px; border-radius: 12px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.doc-item { 
+    background: #fbfbfd; 
+    padding: 12px 18px; 
+    border-radius: 12px; 
+    border: 1px solid var(--border); 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+}
 
-/* --- AJUSTES PARA CELULAR (RESPONSIVE) --- */
-@media (max-width: 768px) {
-    body { flex-direction: column; overflow-y: auto; }
-    
-    .sidebar { 
-        width: 100%; 
-        padding: 15px; 
-        border-right: none; 
-        border-bottom: 1px solid var(--border);
-    }
-    
-    .logo h2 { margin-bottom: 10px; font-size: 1.2rem; }
-    nav { flex-direction: row; overflow-x: auto; padding-bottom: 5px; margin-top: 10px; }
-    .nav-btn { padding: 10px 15px; white-space: nowrap; font-size: 0.9rem; }
-
-    .main-content { padding: 15px; }
-    .card { padding: 20px; }
-
-    /* IMPORTANTE: Pasamos de 2 columnas a 1 para que no se amontone */
-    .grid-inputs, .doc-list { 
-        grid-template-columns: 1fr; 
-        gap: 15px; 
-    }
-
-    input, .btn-action { 
-        font-size: 16px; /* Evita que iOS haga zoom molesto al escribir */
-    }
+/* Modales ocultos por defecto para que no estorben */
+.modal-overlay { 
+    position: fixed; 
+    top: 0; left: 0; 
+    width: 100%; height: 100%; 
+    background: rgba(0,0,0,0.4); 
+    display: none; 
+    align-items: center; 
+    justify-content: center; 
+    z-index: 1000; 
 }
