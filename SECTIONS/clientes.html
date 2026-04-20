@@ -1,84 +1,66 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clientes - Rodemos</title>
-</head>
-<body>
-    <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-        <h1 style="font-weight: 800; font-size: 2rem;">Clientes</h1>
-        <button onclick="abrirListado()" class="btn-listado" style="background: white; border: 1px solid #d2d2d7; padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: 600;">📋 LISTADO</button>
-    </header>
+<header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1 style="font-weight: 800;">Clientes</h1>
+    <button onclick="abrirListado()" class="btn-listado">📋 LISTADO</button>
+</header>
 
-    <div class="card">
+<div class="card">
+    <div class="grid-inputs">
+        <div class="input-group"><label>Nombre Completo</label><input type="text" id="cli-nombre" oninput="this.value = this.value.toUpperCase(); buscarCoincidencias();"></div>
+        <div class="input-group"><label>Cédula</label><input type="text" id="cli-doc" oninput="buscarCoincidencias();"></div>
+    </div>
+
+    <div id="btn-principal-crear" style="display: none; text-align: center;">
+        <button onclick="mostrarFormularioNuevo()" class="btn-action" style="background:#000; width: 250px;">+ CREAR CLIENTE NUEVO</button>
+    </div>
+
+    <div id="detalle-completo" style="display: none; border-top: 1px solid #eee; margin-top: 25px; padding-top: 25px;">
         <div class="grid-inputs">
-            <div class="input-group">
-                <label>Nombre Completo</label>
-                <input type="text" id="cli-nombre" placeholder="EJ: SEBASTIAN LOPES" oninput="this.value = this.value.toUpperCase(); buscarCoincidencias();">
-            </div>
-            <div class="input-group">
-                <label>Cédula</label>
-                <input type="text" id="cli-doc" placeholder="Número de documento" oninput="buscarCoincidencias();">
-            </div>
+            <div class="input-group"><label>Email</label><input type="email" id="cli-email"></div>
+            <div class="input-group"><label>Teléfono</label><input type="text" id="cli-tel"></div>
+            <div class="input-group"><label>Dirección</label><input type="text" id="cli-dir"></div>
+            <div class="input-group"><label>Barrio</label><input type="text" id="cli-barrio"></div>
         </div>
 
-        <div id="btn-principal-crear" style="display: none; text-align: center; margin: 20px 0;">
-            <button onclick="mostrarFormularioNuevo()" class="btn-action" style="background:#000; width: 250px; color: white; padding: 15px; border-radius: 12px; cursor: pointer; border: none; font-weight: 700;">+ CREAR CLIENTE NUEVO</button>
-        </div>
-
-        <div id="detalle-completo" style="display: none; border-top: 1px solid #eee; margin-top: 25px; padding-top: 25px;">
-            <div class="grid-inputs">
-                <div class="input-group"><label>Email</label><input type="email" id="cli-email"></div>
-                <div class="input-group"><label>Teléfono</label><input type="text" id="cli-tel"></div>
-                <div class="input-group"><label>Dirección</label><input type="text" id="cli-dir"></div>
-                <div class="input-group"><label>Barrio</label><input type="text" id="cli-barrio"></div>
+        <h4 style="color: var(--primary-red); margin: 20px 0; font-size: 0.8rem;">FOTOS Y DOCUMENTOS</h4>
+        <div class="doc-list">
+            <div class="doc-item"><span>Cédula Frontal</span><div class="doc-actions">
+                <button class="btn-icon" onclick="iniciarCargaCelular('Céd. Frontal')">📱</button>
+                <button class="btn-icon" onclick="openLightbox('ced1')">👁️</button>
+                <button class="btn-icon" onclick="document.getElementById('f1').click()">📁</button>
+                <input type="file" id="f1" hidden onchange="handleFile(this, 'ced1')">
+            </div></div>
+            <div class="doc-item"><span>Cédula Trasera</span><div class="doc-actions">
+                <button class="btn-icon" onclick="iniciarCargaCelular('Céd. Trasera')">📱</button>
+                <button class="btn-icon" onclick="openLightbox('ced2')">👁️</button>
+                <button class="btn-icon" onclick="document.getElementById('f2').click()">📁</button>
+                <input type="file" id="f2" hidden onchange="handleFile(this, 'ced2')">
+            </div></div>
             </div>
-
-            <h4 style="color: #d32f2f; margin: 25px 0 15px 0; font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">Fotos y Documentos</h4>
-            <div class="doc-list">
-                <div class="doc-item" style="background: #fbfbfd; padding: 15px; border-radius: 12px; border: 1px solid #d2d2d7; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <span>Cédula Frontal</span>
-                    <div class="doc-actions" style="display: flex; gap: 15px;">
-                        <button class="btn-icon" style="cursor:pointer; background:none; border:none; font-size: 1.2rem;" onclick="openLightbox('ced1')">👁️</button>
-                        <button class="btn-icon" style="cursor:pointer; background:none; border:none; font-size: 1.2rem;" onclick="document.getElementById('f1').click()">📁</button>
-                        <input type="file" id="f1" accept="image/*" hidden onchange="handleFile(this, 'ced1')">
-                    </div>
-                </div>
-
-                <div class="doc-item" style="background: #fbfbfd; padding: 15px; border-radius: 12px; border: 1px solid #d2d2d7; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <span>Cédula Trasera</span>
-                    <div class="doc-actions" style="display: flex; gap: 15px;">
-                        <button class="btn-icon" style="cursor:pointer; background:none; border:none; font-size: 1.2rem;" onclick="openLightbox('ced2')">👁️</button>
-                        <button class="btn-icon" style="cursor:pointer; background:none; border:none; font-size: 1.2rem;" onclick="document.getElementById('f2').click()">📁</button>
-                        <input type="file" id="f2" accept="image/*" hidden onchange="handleFile(this, 'ced2')">
-                    </div>
-                </div>
-            </div>
-
-            <button onclick="validarYGuardarCliente()" class="btn-action" style="background: black; color: white; width: 100%; padding: 18px; border-radius: 15px; margin-top: 30px; font-weight: 700; border: none; cursor: pointer;">MODIFICAR CLIENTE</button>
-        </div>
+        <button onclick="validarYGuardarCliente()" class="btn-action" style="margin-top: 30px;">GUARDAR REGISTRO</button>
     </div>
+</div>
 
-    <div id="area-coincidencias" style="display: none; margin-top: 20px;"></div>
+<div id="area-coincidencias" style="display: none;"><h3 style="margin-bottom:15px; font-size: 1rem;">Coincidencias</h3><div id="lista-resultados"></div></div>
 
-    <div id="modal-listado" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
-        <div class="modal-content" style="background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 800px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="color:#217346">📗 Listado Maestro</h2>
-                <button onclick="cerrarModales()" style="cursor:pointer; background:none; border:none; font-size: 1.5rem;">✕</button>
-            </div>
-            <div class="excel-container" style="overflow-x: auto;">
-                <table class="excel-table" style="width: 100%; border-collapse: collapse;">
-                    <thead><tr style="background: #f8f8f8;"><th style="padding: 12px; border-bottom: 2px solid #ddd;">Nombre</th><th style="padding: 12px; border-bottom: 2px solid #ddd;">CC</th><th style="padding: 12px; border-bottom: 2px solid #ddd;">Teléfono</th><th>Acción</th></tr></thead>
-                    <tbody id="tabla-excel-body"></tbody>
-                </table>
+<div id="modal-listado" class="modal-overlay">
+    <div class="modal-content" style="max-width: 900px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="color:var(--excel-green)">📗 Listado Excel</h2>
+            <div>
+                <button onclick="exportarExcel()" class="btn-listado" style="display:inline-block">Exportar</button>
+                <button onclick="cerrarModales()" class="btn-listado" style="display:inline-block">✕</button>
             </div>
         </div>
+        <div class="excel-container"><table class="excel-table"><thead><tr><th>Nombre</th><th>CC</th><th>Tel</th><th>Barrio</th><th>Ficha</th></tr></thead><tbody id="tabla-excel-body"></tbody></table></div>
     </div>
+</div>
 
-    <div id="lightbox" onclick="this.style.display='none'" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center;">
-        <img id="img-lightbox" src="" style="max-width: 90%; max-height: 90%; border: 3px solid white; border-radius: 10px;">
+<div id="modal-qr" class="modal-overlay">
+    <div class="modal-content" style="max-width: 300px; text-align: center;">
+        <h3 id="qr-desc"></h3>
+        <div id="qr-img-placeholder" style="margin: 20px 0;"></div>
+        <button onclick="cerrarModales()" class="btn-action">CERRAR</button>
     </div>
-</body>
-</html>
+</div>
+
+<div id="lightbox" onclick="this.style.display='none'"><img id="img-lightbox" src="" style="max-width: 90%; max-height: 90%;"></div>
