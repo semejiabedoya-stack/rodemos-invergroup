@@ -1,66 +1,113 @@
-<header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-    <h1 style="font-weight: 800;">Clientes</h1>
+<header class="section-header">
+    <h1>Clientes</h1>
     <button onclick="abrirListado()" class="btn-listado">📋 LISTADO</button>
 </header>
 
 <div class="card">
     <div class="grid-inputs">
-        <div class="input-group"><label>Nombre Completo</label><input type="text" id="cli-nombre" oninput="this.value = this.value.toUpperCase(); buscarCoincidencias();"></div>
-        <div class="input-group"><label>Cédula</label><input type="text" id="cli-doc" oninput="buscarCoincidencias();"></div>
+        <div class="input-group">
+            <label>Nombre Completo</label>
+            <input type="text" id="cli-nombre" placeholder="EJ: SEBASTIAN LOPES" oninput="this.value = this.value.toUpperCase(); buscarCoincidencias();">
+        </div>
+        <div class="input-group">
+            <label>Cédula</label>
+            <input type="text" id="cli-doc" placeholder="Número de documento" oninput="buscarCoincidencias();">
+        </div>
     </div>
 
-    <div id="btn-principal-crear" style="display: none; text-align: center;">
-        <button onclick="mostrarFormularioNuevo()" class="btn-action" style="background:#000; width: 250px;">+ CREAR CLIENTE NUEVO</button>
+    <div id="btn-principal-crear" style="display: none; text-align: center; margin: 20px 0;">
+        <button onclick="mostrarFormularioNuevo()" class="btn-action" style="background:#000; max-width: 300px;">+ CREAR CLIENTE NUEVO</button>
     </div>
 
     <div id="detalle-completo" style="display: none; border-top: 1px solid #eee; margin-top: 25px; padding-top: 25px;">
         <div class="grid-inputs">
-            <div class="input-group"><label>Email</label><input type="email" id="cli-email"></div>
-            <div class="input-group"><label>Teléfono</label><input type="text" id="cli-tel"></div>
-            <div class="input-group"><label>Dirección</label><input type="text" id="cli-dir"></div>
-            <div class="input-group"><label>Barrio</label><input type="text" id="cli-barrio"></div>
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="cli-email" placeholder="correo@ejemplo.com">
+            </div>
+            <div class="input-group">
+                <label>Teléfono</label>
+                <input type="text" id="cli-tel" placeholder="300 000 0000">
+            </div>
+            <div class="input-group">
+                <label>Dirección</label>
+                <input type="text" id="cli-dir" placeholder="Calle / Carrera">
+            </div>
+            <div class="input-group">
+                <label>Barrio</label>
+                <input type="text" id="cli-barrio" placeholder="Sector">
+            </div>
         </div>
 
-        <h4 style="color: var(--primary-red); margin: 20px 0; font-size: 0.8rem;">FOTOS Y DOCUMENTOS</h4>
+        <h4 style="color: var(--primary-red); margin: 25px 0 15px 0; font-size: 0.8rem; letter-spacing: 1px;">FOTOS Y DOCUMENTOS</h4>
+        
         <div class="doc-list">
-            <div class="doc-item"><span>Cédula Frontal</span><div class="doc-actions">
-                <button class="btn-icon" onclick="iniciarCargaCelular('Céd. Frontal')">📱</button>
-                <button class="btn-icon" onclick="openLightbox('ced1')">👁️</button>
-                <button class="btn-icon" onclick="document.getElementById('f1').click()">📁</button>
-                <input type="file" id="f1" hidden onchange="handleFile(this, 'ced1')">
-            </div></div>
-            <div class="doc-item"><span>Cédula Trasera</span><div class="doc-actions">
-                <button class="btn-icon" onclick="iniciarCargaCelular('Céd. Trasera')">📱</button>
-                <button class="btn-icon" onclick="openLightbox('ced2')">👁️</button>
-                <button class="btn-icon" onclick="document.getElementById('f2').click()">📁</button>
-                <input type="file" id="f2" hidden onchange="handleFile(this, 'ced2')">
-            </div></div>
+            <div class="doc-item">
+                <span>Cédula Frontal</span>
+                <div class="doc-actions">
+                    <button class="btn-icon" title="Cargar desde Celular" onclick="iniciarCargaCelular('Céd. Frontal')">📱</button>
+                    <button class="btn-icon" title="Ver Foto" onclick="openLightbox('ced1')">👁️</button>
+                    <button class="btn-icon" title="Subir Archivo" onclick="document.getElementById('f1').click()">📁</button>
+                    <input type="file" id="f1" accept="image/*" hidden onchange="handleFile(this, 'ced1')">
+                </div>
             </div>
-        <button onclick="validarYGuardarCliente()" class="btn-action" style="margin-top: 30px;">GUARDAR REGISTRO</button>
+
+            <div class="doc-item">
+                <span>Cédula Trasera</span>
+                <div class="doc-actions">
+                    <button class="btn-icon" title="Cargar desde Celular" onclick="iniciarCargaCelular('Céd. Trasera')">📱</button>
+                    <button class="btn-icon" title="Ver Foto" onclick="openLightbox('ced2')">👁️</button>
+                    <button class="btn-icon" title="Subir Archivo" onclick="document.getElementById('f2').click()">📁</button>
+                    <input type="file" id="f2" accept="image/*" hidden onchange="handleFile(this, 'ced2')">
+                </div>
+            </div>
+        </div>
+
+        <button onclick="validarYGuardarCliente()" class="btn-action" style="margin-top: 35px;">GUARDAR REGISTRO</button>
     </div>
 </div>
 
-<div id="area-coincidencias" style="display: none;"><h3 style="margin-bottom:15px; font-size: 1rem;">Coincidencias</h3><div id="lista-resultados"></div></div>
+<div id="area-coincidencias" style="display: none; margin-top: 20px;">
+    <h3 style="margin-bottom:15px; font-size: 1rem; color: var(--text-dim);">Coincidencias encontradas</h3>
+    <div id="lista-resultados"></div>
+</div>
 
 <div id="modal-listado" class="modal-overlay">
-    <div class="modal-content" style="max-width: 900px;">
+    <div class="modal-content" style="max-width: 95%; width: 900px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2 style="color:var(--excel-green)">📗 Listado Excel</h2>
-            <div>
-                <button onclick="exportarExcel()" class="btn-listado" style="display:inline-block">Exportar</button>
-                <button onclick="cerrarModales()" class="btn-listado" style="display:inline-block">✕</button>
+            <h2 style="color:var(--excel-green); font-size: 1.2rem;">📗 Listado Maestro</h2>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="exportarExcel()" class="btn-listado">Exportar</button>
+                <button onclick="cerrarModales()" class="btn-listado">✕</button>
             </div>
         </div>
-        <div class="excel-container"><table class="excel-table"><thead><tr><th>Nombre</th><th>CC</th><th>Tel</th><th>Barrio</th><th>Ficha</th></tr></thead><tbody id="tabla-excel-body"></tbody></table></div>
+        <div class="excel-container">
+            <table class="excel-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>CC</th>
+                        <th>Teléfono</th>
+                        <th>Barrio</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-excel-body"></tbody>
+            </table>
+        </div>
     </div>
 </div>
 
 <div id="modal-qr" class="modal-overlay">
-    <div class="modal-content" style="max-width: 300px; text-align: center;">
-        <h3 id="qr-desc"></h3>
-        <div id="qr-img-placeholder" style="margin: 20px 0;"></div>
-        <button onclick="cerrarModales()" class="btn-action">CERRAR</button>
+    <div class="modal-content" style="max-width: 320px; text-align: center; border-radius: 30px;">
+        <h3 id="qr-desc" style="font-size: 1rem; margin-bottom: 10px;"></h3>
+        <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 15px;">Escanea con tu celular para subir la foto</p>
+        <div id="qr-img-placeholder" style="background: #f8f8f8; padding: 20px; border-radius: 20px; margin-bottom: 20px;"></div>
+        <button onclick="cerrarModales()" class="btn-action">FINALIZAR</button>
     </div>
 </div>
 
-<div id="lightbox" onclick="this.style.display='none'"><img id="img-lightbox" src="" style="max-width: 90%; max-height: 90%;"></div>
+<div id="lightbox" class="modal-overlay" onclick="this.style.display='none'" style="background: rgba(0,0,0,0.9); z-index: 3000;">
+    <img id="img-lightbox" src="" style="max-width: 90%; max-height: 85%; border-radius: 10px; border: 3px solid white;">
+    <p style="color: white; margin-top: 20px; font-weight: 600;">Toca cualquier parte para cerrar</p>
+</div>
