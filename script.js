@@ -6,11 +6,38 @@ async function loadPage(page) {
     try {
         const response = await fetch(`SECTIONS/${page}.html`);
         document.getElementById('content-area').innerHTML = await response.text();
+        
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.classList.remove('active');
             if (btn.innerText.toLowerCase().includes(page)) btn.classList.add('active');
         });
+
+        // --- CAMBIO 1: ACTIVAR DETECTOR AL CARGAR LA SECCIÓN ---
+        if (page === 'clientes') {
+            activarDetectorCedula();
+        }
+
     } catch (e) { console.error("Error al cargar"); }
+}
+
+// --- FUNCIÓN DEL CAMBIO 1: AVISO INMEDIATO DE CÉDULA EXISTENTE ---
+function activarDetectorCedula() {
+    const inputDoc = document.getElementById('cli-doc');
+    if (inputDoc) {
+        // Se activa cuando el asesor sale del cuadro de texto (hace clic fuera)
+        inputDoc.addEventListener('blur', function() {
+            const cedulaIngresada = this.value.trim();
+            if (cedulaIngresada === "") return;
+
+            // Revisar si ya existe en la base de datos
+            const existe = dbClientes.some(c => String(c.doc) === String(cedulaIngresada));
+
+            if (existe) {
+                // Mensaje inmediato en el centro de la pantalla
+                alert(`⚠️ IDENTIFICACIÓN EXISTENTE: El cliente con CC ${cedulaIngresada} ya se encuentra registrado.\n\nRevise el listado o las coincidencias antes de continuar.`);
+            }
+        });
+    }
 }
 
 function buscarCoincidencias() {
@@ -53,37 +80,28 @@ function handleFile(input, key) {
 function iniciarCargaCelular(tipoDoc) {
     const modal = document.getElementById('modal-qr');
     const qrPlaceholder = document.getElementById('qr-img-placeholder');
-    
-    // Obtenemos la cédula del cliente actual para que el QR sea único
     const cedulaCliente = document.getElementById('cli-doc').value;
     
     if(!cedulaCliente) return alert("Primero ingresa la cédula del cliente");
 
     const miIP = "192.168.1.8"; 
     const puerto = "5500"; 
-    
-    // El QR ahora lleva el ID del cliente: ?mode=camera&id=12345
     const urlParaCelular = `http://${miIP}:${puerto}/index.html?mode=camera&id=${cedulaCliente}`;
     
     qrPlaceholder.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(urlParaCelular)}" />`;
-    
     document.getElementById('qr-desc').innerText = `Escanea para vincular cámara al cliente: ${cedulaCliente}`;
     modal.classList.add('show');
 }
 
-// ESCUCHADOR PARA RECIBIR LAS FOTOS DESDE EL CELULAR
 const bc = new BroadcastChannel('transferencia_fotos');
 bc.onmessage = (event) => {
-    console.log("Recibiendo fotos del celular...", event.data);
     fotosTemp = { ...fotosTemp, ...event.data };
-    
-    // Feedback visual en el PC
-    alert("✅ ¡Fotos recibidas desde el celular! Ya puedes guardar el registro.");
+    alert("✅ ¡Fotos recibidas desde el celular!");
     document.getElementById('modal-qr').classList.remove('show');
 };
 
 function openLightbox(key) {
-    const src = clienteSeleccionadoIdx !== null ? dbClientes[clienteSeleccion0Idx][key] : fotosTemp[key];
+    const src = clienteSeleccionadoIdx !== null ? dbClientes[clienteSeleccionadoIdx][key] : fotosTemp[key];
     if(!src) return alert("Sin imagen");
     document.getElementById('img-lightbox').src = src;
     document.getElementById('lightbox').style.display = "flex";
@@ -97,19 +115,26 @@ function verDetalle(idx) {
     
     ['nombre', 'doc', 'email', 'tel', 'dir', 'barrio'].forEach(f => {
         const el = document.getElementById('cli-' + f);
-        el.value = c[f] || "";
-        el.readOnly = true;
+        if(el) {
+            el.value = c[f] || "";
+            el.readOnly = true;
+        }
     });
 
     const btn = document.querySelector("#detalle-completo .btn-action");
-    btn.innerText = "MODIFICAR CLIENTE";
-    btn.style.background = "#000";
-    btn.onclick = () => {
-        ['nombre', 'doc', 'email', 'tel', 'dir', 'barrio'].forEach(f => document.getElementById('cli-' + f).readOnly = false);
-        btn.innerText = "GUARDAR CAMBIOS";
-        btn.style.background = "var(--primary-red)";
-        btn.onclick = guardarExistente;
-    };
+    if(btn) {
+        btn.innerText = "MODIFICAR CLIENTE";
+        btn.style.background = "#000";
+        btn.onclick = () => {
+            ['nombre', 'doc', 'email', 'tel', 'dir', 'barrio'].forEach(f => {
+                const el = document.getElementById('cli-' + f);
+                if(el) el.readOnly = false;
+            });
+            btn.innerText = "GUARDAR CAMBIOS";
+            btn.style.background = "var(--primary-red)";
+            btn.onclick = guardarExistente;
+        };
+    }
 }
 
 function guardarExistente() {
@@ -150,6 +175,7 @@ function validarYGuardarCliente() {
         ...fotosTemp
     });
     localStorage.setItem('motos_clientes', JSON.stringify(dbClientes));
+    alert("✅ Registro guardado exitosamente");
     location.reload();
 }
 
