@@ -1,0 +1,131 @@
+<header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+    <h1 style="font-weight: 800;">Motos</h1>
+    <div class="doc-actions">
+        <button onclick="exportarMotosExcel()" class="btn-listado">Exportar</button>
+        <button onclick="abrirModalImportarMotos()" class="btn-listado">Importar</button>
+    </div>
+</header>
+
+<input type="file" id="input-importar-motos" hidden accept=".csv" onchange="importarMotos(this)">
+
+<div class="card cliente-admin-toolbar">
+    <div class="grid-inputs">
+        <div class="input-group"><label>Buscar por placa</label><input type="text" id="mo-placa" placeholder="Placa" oninput="this.value = this.value.toUpperCase(); buscarMotos();"></div>
+        <div class="input-group"><label>Buscar por marca, referencia o linea</label><input type="text" id="mo-busqueda" placeholder="Marca, referencia, linea..." oninput="this.value = this.value.toUpperCase(); buscarMotos();"></div>
+    </div>
+
+    <div id="btn-principal-crear-moto" style="display: none;">
+        <button onclick="mostrarFormularioMotoNueva()" class="btn-action dashboard-compact-action">Crear moto con esta busqueda</button>
+    </div>
+</div>
+
+<section class="card cliente-listado-card">
+    <div class="dashboard-panel-header">
+        <div>
+            <h2>Listado de motos</h2>
+            <p class="dashboard-subtitle" id="motos-listado-resumen">Motos registradas.</p>
+        </div>
+        <div id="motos-listado-paginacion" class="dashboard-pagination"></div>
+    </div>
+    <div class="excel-container">
+        <table class="excel-table">
+            <thead>
+                <tr>
+                    <th>Placa</th>
+                    <th>Marca</th>
+                    <th>Referencia</th>
+                    <th>Linea</th>
+                    <th>Modelo</th>
+                    <th>SOAT</th>
+                    <th>Tecno</th>
+                    <th>Estado docs</th>
+                    <th>Ficha</th>
+                </tr>
+            </thead>
+            <tbody id="motos-listado-body"></tbody>
+        </table>
+    </div>
+</section>
+
+<div id="detalle-moto" class="modal-overlay cliente-form-modal" style="display: none;">
+    <div class="modal-content cliente-form-content">
+        <div class="dashboard-panel-header sticky-modal-header">
+            <div>
+                <h2 id="moto-modal-titulo">Ficha de moto</h2>
+                <p class="dashboard-subtitle">Datos, documentos e imagenes para consulta del asesor.</p>
+            </div>
+            <button class="btn-listado" type="button" onclick="cerrarFormularioMoto()">X</button>
+        </div>
+
+        <div class="grid-inputs">
+            <div class="input-group"><label>Placa</label><input type="text" id="mo-form-placa" oninput="this.value = this.value.toUpperCase(); document.getElementById('mo-placa').value = this.value;"></div>
+            <div class="input-group"><label>Marca</label><input type="text" id="mo-marca"></div>
+            <div class="input-group"><label>Referencia moto</label><input type="text" id="mo-referencia"></div>
+            <div class="input-group"><label>Linea</label><input type="text" id="mo-linea"></div>
+            <div class="input-group"><label>Clase</label><input type="text" id="mo-clase"></div>
+            <div class="input-group"><label>Modelo</label><input type="text" id="mo-modelo"></div>
+            <div class="input-group"><label>Cilindraje</label><input type="text" id="mo-cilindraje"></div>
+            <div class="input-group"><label>Color</label><input type="text" id="mo-color"></div>
+            <div class="input-group"><label># Motor</label><input type="text" id="mo-motor"></div>
+            <div class="input-group"><label># Chasis</label><input type="text" id="mo-chasis"></div>
+            <div class="input-group"><label>Fecha vence tecnomecanica</label><input type="date" id="mo-tecno"></div>
+            <div class="input-group"><label>Fecha vence SOAT</label><input type="date" id="mo-soat"></div>
+        </div>
+
+        <div class="moto-doc-panel">
+            <div class="dashboard-panel-header">
+                <div>
+                    <h3>Imagenes y documentos</h3>
+                    <p class="dashboard-subtitle">Carga matricula lado 1, matricula lado 2, tecnomecanica y SOAT. Luego puedes copiarlas para pegarlas en WhatsApp.</p>
+                </div>
+                <button class="btn-listado" type="button" onclick="copiarImagenesMoto()">Copiar imagenes</button>
+            </div>
+            <div class="moto-photo-grid">
+                <div class="moto-photo-slot">
+                    <label>Matricula lado 1</label>
+                    <input type="file" id="mo-img-lado1" accept="image/*" onchange="cargarImagenMoto('lado1', this)">
+                    <div id="mo-preview-lado1" class="moto-photo-preview">Sin imagen</div>
+                </div>
+                <div class="moto-photo-slot">
+                    <label>Matricula lado 2</label>
+                    <input type="file" id="mo-img-lado2" accept="image/*" onchange="cargarImagenMoto('lado2', this)">
+                    <div id="mo-preview-lado2" class="moto-photo-preview">Sin imagen</div>
+                </div>
+                <div class="moto-photo-slot">
+                    <label>Tecnomecanica</label>
+                    <input type="file" id="mo-img-tecno" accept="image/*" onchange="cargarImagenMoto('tecno', this)">
+                    <div id="mo-preview-tecno" class="moto-photo-preview">Sin imagen</div>
+                </div>
+                <div class="moto-photo-slot">
+                    <label>SOAT</label>
+                    <input type="file" id="mo-img-soat" accept="image/*" onchange="cargarImagenMoto('soat', this)">
+                    <div id="mo-preview-soat" class="moto-photo-preview">Sin imagen</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="alerta-documentos-moto" class="mini-alert" style="display:none;"></div>
+        <button onclick="guardarMoto()" class="btn-action" style="margin-top: 18px;">Guardar moto</button>
+    </div>
+</div>
+
+<div id="area-coincidencias-motos" style="display: none;">
+    <h3 style="margin-bottom:15px; font-size: 1rem;">Coincidencias</h3>
+    <div id="lista-resultados-motos"></div>
+</div>
+
+<div id="modal-importar-motos" class="modal-overlay">
+    <div class="modal-content" style="max-width: 520px;">
+        <div class="dashboard-panel-header">
+            <div>
+                <h2>Importar motos</h2>
+                <p class="dashboard-subtitle">Puedes cargar un archivo CSV o descargar la plantilla.</p>
+            </div>
+            <button class="btn-listado" type="button" onclick="cerrarModalImportarMotos()">X</button>
+        </div>
+        <div class="doc-actions" style="justify-content:center;">
+            <button class="btn-action" type="button" onclick="cargarArchivoMotos()">Cargar archivo</button>
+            <button class="btn-listado" type="button" onclick="descargarPlantillaMotos()">Descargar plantilla</button>
+        </div>
+    </div>
+</div>

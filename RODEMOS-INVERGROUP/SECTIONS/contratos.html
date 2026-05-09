@@ -1,0 +1,468 @@
+<section class="contract-topbar-card">
+    <div class="contract-topbar contract-topbar-only">
+        <button class="btn-listado contract-mode-tab active" id="btn-mode-nuevo" type="button" onclick="seleccionarModoContrato('NUEVO')">Nuevo</button>
+        <button class="btn-listado contract-mode-tab" id="btn-mode-cambio" type="button" onclick="seleccionarModoContrato('CAMBIO')">Cambio</button>
+        <button class="btn-listado contract-mode-tab" id="btn-mode-finalizacion" type="button" onclick="seleccionarModoContrato('FINALIZACION')">Finalizacion</button>
+        <button class="btn-listado contract-mode-tab" id="btn-mode-historial" type="button" onclick="irHistorialContratos()">Historial</button>
+    </div>
+</section>
+
+<section id="contrato-panel-nuevo" style="display:none;">
+    <div class="card">
+        <div class="contract-step-box contract-step-primary">
+            <div class="contract-code-highlight">
+                <span>Codigo del contrato</span>
+                <strong id="con-codigo-visual">SIN GENERAR</strong>
+            </div>
+            <div class="contract-mini-actions">
+                <button onclick="generarCodigoContrato()" class="btn-action contract-inline-action" id="btn-generar-codigo">Generar codigo</button>
+            </div>
+            <input type="hidden" id="con-codigo">
+            <input type="hidden" id="con-estado" value="ACTIVO">
+        </div>
+
+        <div class="contract-step-box contract-step-disabled" id="con-step-arrendatarios">
+            <div class="grid-inputs">
+                <div class="input-group">
+                    <label>Arrendatario 1</label>
+                    <div class="inline-picker">
+                        <input type="text" id="con-arrendatario-1" readonly placeholder="Selecciona un cliente">
+                        <button class="btn-listado" type="button" id="con-btn-arr1" onclick="abrirSelectorEntidad('cliente', 'arrendatario1')" disabled>Seleccionar</button>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Arrendatario 2</label>
+                    <div class="inline-picker">
+                        <input type="text" id="con-arrendatario-2" readonly placeholder="Selecciona un cliente">
+                        <button class="btn-listado" type="button" id="con-btn-arr2" onclick="abrirSelectorEntidad('cliente', 'arrendatario2')" disabled>Seleccionar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="contract-step-box contract-step-disabled" id="con-step-detalles">
+            <div class="grid-inputs">
+                <div class="input-group">
+                    <label>Moto</label>
+                    <div class="inline-picker">
+                        <input type="text" id="con-moto" readonly placeholder="Selecciona una moto">
+                        <button class="btn-listado" type="button" id="con-btn-moto" onclick="abrirSelectorEntidad('moto', 'moto')" disabled>Seleccionar</button>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Fecha de inicio</label>
+                    <input type="date" id="con-fecha-inicio" readonly>
+                </div>
+                <div class="input-group">
+                    <label>Hora de creacion</label>
+                    <input type="text" id="con-hora-creacion" readonly>
+                </div>
+                <div class="input-group">
+                    <label>Fecha de devolucion</label>
+                    <div class="contract-return-picker">
+                        <select id="con-devolucion-dia" disabled onchange="sincronizarFechaDevolucionContrato()"></select>
+                        <select id="con-devolucion-mes" disabled onchange="sincronizarFechaDevolucionContrato()"></select>
+                        <input type="text" id="con-devolucion-anio" readonly>
+                    </div>
+                    <label class="contract-checkline">
+                        <input type="checkbox" id="con-fecha-indefinida" onchange="toggleFechaDevolucionIndefinida(this.checked)" disabled>
+                        <span>Indefinido</span>
+                    </label>
+                    <input type="hidden" id="con-fecha-devolucion">
+                </div>
+                <div class="input-group">
+                    <label>Valor alquiler</label>
+                    <input type="text" id="con-valor" data-money="1" placeholder="0" disabled>
+                </div>
+                <div class="input-group">
+                    <label>Tipo de contrato</label>
+                    <select id="con-tipo-contrato" disabled>
+                        <option value="CORTO">Corto</option>
+                        <option value="LARGO">Largo</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Observaciones</label>
+                    <input type="text" id="con-observaciones" placeholder="Notas del contrato" disabled>
+                </div>
+            </div>
+
+            <div class="contract-live-card">
+                <div class="contract-live-title">Novedades de la moto</div>
+                <div class="contract-delivery-row">
+                    <div class="input-group compact-condition">
+                        <label>Estado de entrega</label>
+                        <div class="condition-options" id="con-estado-entrega">
+                            <button class="btn-listado condition-option active" type="button" data-value="LIMPIA" onclick="seleccionarEstadoEntrega('LIMPIA')">Limpia</button>
+                            <button class="btn-listado condition-option" type="button" data-value="SUCIA" onclick="seleccionarEstadoEntrega('SUCIA')">Sucia</button>
+                            <button class="btn-listado condition-option" type="button" data-value="LAVADA" onclick="seleccionarEstadoEntrega('LAVADA')">Lavada</button>
+                        </div>
+                    </div>
+                    <div class="input-group compact-docs">
+                        <label>Entrega de documentos</label>
+                        <div class="toggle-chip-row">
+                            <div class="toggle-chip-block">
+                                <small>Llaves</small>
+                                <button class="btn-listado toggle-chip yes" type="button" id="con-entrega-llaves" onclick="toggleEntregaItem('llaves')">SI</button>
+                            </div>
+                            <div class="toggle-chip-block">
+                                <small>Matricula</small>
+                                <button class="btn-listado toggle-chip yes" type="button" id="con-entrega-matricula" onclick="toggleEntregaItem('matricula')">SI</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group compact-counters">
+                        <label>Accesorios</label>
+                        <div class="contract-counter-row">
+                            <button class="btn-listado counter-chip" type="button" id="con-cascos-btn" onclick="cambiarContadorEntrega('cascos')">Cascos: 0</button>
+                            <button class="btn-listado counter-chip" type="button" id="con-chalecos-btn" onclick="cambiarContadorEntrega('chalecos')">Chalecos: 0</button>
+                            <button class="btn-listado counter-chip" type="button" id="con-impermeables-btn" onclick="cambiarContadorEntrega('impermeables')">Impermeables: 0</button>
+                        </div>
+                        <input type="hidden" id="con-cascos" value="0">
+                        <input type="hidden" id="con-chalecos" value="0">
+                        <input type="hidden" id="con-impermeables" value="0">
+                    </div>
+                    <div class="input-group compact-fuel">
+                        <label>Nivel de gasolina</label>
+                        <div id="con-fuel-scale" class="fuel-scale"></div>
+                        <input type="hidden" id="con-fuel-level" value="0">
+                        <small id="con-fuel-label" class="dashboard-subtitle">0 / 10</small>
+                    </div>
+                    <div class="input-group compact-km">
+                        <label>Kilometraje</label>
+                        <input type="text" id="con-kilometraje" placeholder="0" data-money="1" disabled>
+                    </div>
+                    <div class="input-group compact-notes">
+                        <label>Novedades</label>
+                        <input type="text" id="con-novedades-entrega" placeholder="Rayones, golpes, observaciones..." disabled>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contract-subcard">
+                <div class="contract-summary-row">
+                    <div class="summary-chip">
+                        <span>Abono reserva</span>
+                        <strong id="con-abono-reserva">0</strong>
+                    </div>
+                    <div class="summary-chip">
+                        <span>Alquiler pagado</span>
+                        <strong id="con-total-pagado-visual">0</strong>
+                    </div>
+                    <div class="summary-chip">
+                        <span>Saldo alquiler</span>
+                        <strong id="con-saldo-pendiente-visual">0</strong>
+                    </div>
+                    <div class="summary-chip">
+                        <span>Depositos</span>
+                        <strong id="con-deposito-pagado-visual">0</strong>
+                    </div>
+                    <div class="summary-chip">
+                        <span>Saldo deposito</span>
+                        <strong id="con-deposito-saldo-visual">0</strong>
+                    </div>
+                    <div class="summary-chip">
+                        <span>Total pagos</span>
+                        <strong id="con-total-general-pagos-visual">0</strong>
+                    </div>
+                </div>
+                <div class="contract-mini-actions">
+                    <button class="btn-listado contract-inline-action" type="button" id="btn-revisar-reserva" onclick="revisarPagosReservaContrato()" disabled>Revisar reserva</button>
+                    <button class="btn-action contract-inline-action" type="button" id="btn-abrir-pagos" onclick="abrirModalPagosContrato()" disabled>Registrar pagos</button>
+                </div>
+                <div class="excel-container" style="margin-top: 16px;">
+                    <table class="excel-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha y hora</th>
+                                <th>Concepto</th>
+                                <th>Descripcion</th>
+                                <th>Medio</th>
+                                <th>Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody id="con-payment-history-body">
+                            <tr><td colspan="4">Todavia no hay pagos registrados.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="alerta-docs-contrato" class="mini-alert" style="display:none;"></div>
+            <div class="contract-footer-actions">
+                <button type="button" onclick="generarPdfContrato()" class="btn-listado contract-inline-action" id="btn-generar-pdf" disabled>Visualizar</button>
+                <button type="button" onclick="imprimirContratoCreado()" class="btn-listado contract-inline-action" id="btn-imprimir-contrato" disabled>Imprimir</button>
+                <button type="button" onclick="guardarContrato()" class="btn-action contract-inline-action" id="btn-guardar-contrato" disabled>Crear contrato</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="contrato-panel-cambio" style="display:none;">
+    <div class="card">
+        <div class="grid-inputs">
+            <div class="input-group">
+                <label>Cliente</label>
+                <div class="inline-picker">
+                    <input type="text" id="con-cambio-cliente" readonly placeholder="Selecciona un cliente">
+                    <button class="btn-listado" type="button" onclick="abrirSelectorEntidad('cliente', 'cambioCliente')">Buscar cliente</button>
+                </div>
+            </div>
+        </div>
+        <div id="con-cambio-contratos-lista" class="dashboard-list"></div>
+    </div>
+
+    <div class="card" id="con-cambio-form-panel" style="display:none;">
+        <div class="contract-code-highlight contract-code-highlight-change">
+            <span>Cambio generado</span>
+            <strong id="con-cambio-codigo-visual">SIN GENERAR</strong>
+        </div>
+
+        <div class="grid-inputs contract-summary-grid">
+            <div class="input-group">
+                <label>Contrato base</label>
+                <input type="text" id="con-cambio-contrato-base" readonly>
+            </div>
+            <div class="input-group">
+                <label>Estado del contrato base</label>
+                <input type="text" id="con-cambio-estado-base" readonly>
+            </div>
+            <div class="input-group">
+                <label>Moto entregada</label>
+                <input type="text" id="con-cambio-moto-base" readonly>
+            </div>
+            <div class="input-group">
+                <label>Cliente</label>
+                <input type="text" id="con-cambio-cliente-resumen" readonly>
+            </div>
+        </div>
+
+        <div class="grid-inputs">
+            <div class="input-group">
+                <label>Entrega limpia</label>
+                <select id="con-cambio-limpieza-entrega">
+                    <option value="SI">SI</option>
+                    <option value="NO">NO</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Nivel de gasolina al entregar</label>
+                <input type="text" id="con-cambio-gasolina-entrega" placeholder="Ej: medio tanque">
+            </div>
+            <div class="input-group">
+                <label>Danos o novedades al entregar</label>
+                <input type="text" id="con-cambio-danos-entrega" placeholder="Ej: sin danos visibles">
+            </div>
+            <div class="input-group">
+                <label>Como la esta devolviendo</label>
+                <input type="text" id="con-cambio-estado-devolucion" placeholder="Ej: con rayones en lateral">
+            </div>
+            <div class="input-group">
+                <label>Limpieza devolucion</label>
+                <input type="text" id="con-cambio-limpieza-devolucion" placeholder="Ej: sucia">
+            </div>
+            <div class="input-group">
+                <label>Gasolina devolucion</label>
+                <input type="text" id="con-cambio-gasolina-devolucion" placeholder="Ej: cuarto de tanque">
+            </div>
+            <div class="input-group">
+                <label>Moto nueva</label>
+                <div class="inline-picker">
+                    <input type="text" id="con-cambio-moto-nueva" readonly placeholder="Selecciona la nueva moto">
+                    <button class="btn-listado" type="button" onclick="abrirSelectorEntidad('moto', 'cambioMoto')">Buscar moto</button>
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Razon del cambio</label>
+                <input type="text" id="con-cambio-razon" placeholder="Escribe la razon del cambio">
+            </div>
+        </div>
+
+        <div id="alerta-docs-cambio" class="mini-alert" style="display:none;"></div>
+        <button class="btn-action" type="button" onclick="guardarCambioContrato()">Guardar cambio</button>
+    </div>
+</section>
+
+<section id="contrato-panel-finalizacion" style="display:none;">
+    <div class="card contract-placeholder-card">
+        <h2>Finalizacion de contrato</h2>
+        <p class="dashboard-subtitle">Este flujo quedo separado para construirlo aparte.</p>
+    </div>
+</section>
+
+<section id="contrato-historial-panel" class="card" style="display:none;">
+    <div class="grid-inputs" style="margin-bottom: 10px;">
+        <div class="input-group">
+            <label>Buscar por nombre</label>
+            <input type="text" id="historial-contrato-busqueda" placeholder="Ej: Andres Vazquez" oninput="renderListaContratos()">
+        </div>
+        <div class="input-group">
+            <label>Fecha desde</label>
+            <input type="date" id="historial-contrato-fecha-desde" oninput="renderListaContratos()">
+        </div>
+        <div class="input-group">
+            <label>Fecha hasta</label>
+            <input type="date" id="historial-contrato-fecha-hasta" oninput="renderListaContratos()">
+        </div>
+        <div class="input-group">
+            <label>Filtrar por moto</label>
+            <input type="text" id="historial-contrato-moto" placeholder="Placa o referencia" oninput="renderListaContratos()">
+        </div>
+        <div class="input-group">
+            <label>Tipo de contrato</label>
+            <select id="historial-contrato-tipo" onchange="renderListaContratos()">
+                <option value="">Todos</option>
+                <option value="CORTO">Corto</option>
+                <option value="LARGO">Largo</option>
+            </select>
+        </div>
+    </div>
+    <div class="excel-container" style="margin-top: 0;">
+        <table class="excel-table">
+            <thead>
+                <tr>
+                    <th>Codigo</th>
+                    <th>Arrendatario 1</th>
+                    <th>Inicio</th>
+                    <th>Hora inicio</th>
+                    <th>Entrega</th>
+                    <th>Hora entrega</th>
+                    <th>Moto</th>
+                    <th>Tipo</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="lista-contratos"></tbody>
+        </table>
+    </div>
+    <div id="detalle-historial-contrato" class="excel-container" style="display:none; margin-top: 18px;"></div>
+</section>
+
+<div id="modal-confirmar-cambio" class="modal-overlay">
+    <div class="modal-content" style="max-width: 560px; text-align: center;">
+        <h2 style="font-weight: 800; margin-bottom: 10px;">Generar cambio</h2>
+        <p id="cambio-confirmacion-texto" style="color: #666; margin-bottom: 22px; line-height: 1.5;">Confirma si deseas generar este cambio.</p>
+        <div class="doc-actions" style="justify-content: center;">
+            <button class="btn-action" style="max-width: 220px;" type="button" onclick="confirmarCambioContratoPendiente()">Confirmar cambio</button>
+            <button class="btn-listado" type="button" onclick="cerrarConfirmacionCambio()">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<div id="modal-pagos-contrato" class="modal-overlay">
+    <div class="modal-content modal-pagos-content">
+        <div class="dashboard-panel-header" style="margin-bottom: 16px;">
+            <div>
+                <h2>Pagos del contrato</h2>
+            </div>
+            <button class="btn-listado" type="button" onclick="cerrarModalPagosContrato()">Cerrar</button>
+        </div>
+        <div class="contract-sales-shell">
+            <div class="contract-sales-summary">
+                <div class="summary-chip">
+                    <span>Abono reserva</span>
+                    <strong id="modal-abono-reserva">0</strong>
+                </div>
+                <div class="summary-chip">
+                    <span>Total alquiler</span>
+                    <strong id="modal-total-alquiler">0</strong>
+                </div>
+                <div class="summary-chip">
+                    <span>Total deposito</span>
+                    <strong id="modal-total-deposito">0</strong>
+                </div>
+            </div>
+            <div class="grid-inputs">
+                <div class="input-group">
+                    <label>Total alquiler</label>
+                    <input type="text" id="modal-total-alquiler-input" data-money="1" placeholder="0" readonly>
+                </div>
+                <div class="input-group">
+                    <label>Total deposito</label>
+                    <input type="text" id="modal-total-deposito-input" data-money="1" placeholder="0">
+                </div>
+                <div class="input-group">
+                    <label>Concepto</label>
+                    <select id="modal-pago-concepto">
+                        <option value="ALQUILER">Alquiler</option>
+                        <option value="DEPOSITO">Deposito</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Medio</label>
+                    <select id="modal-pago-medio">
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="Transferencia">Transferencia</option>
+                        <option value="Tarjeta debito">Tarjeta debito</option>
+                        <option value="Tarjeta credito">Tarjeta credito</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Valor recibido</label>
+                    <input type="text" id="modal-pago-valor" data-money="1" placeholder="0">
+                </div>
+                <div class="input-group">
+                    <label>Descripcion</label>
+                    <input type="text" id="modal-pago-descripcion" placeholder="Detalle del pago">
+                </div>
+            </div>
+            <div class="contract-mini-actions">
+                <button class="btn-action contract-inline-action" type="button" onclick="agregarPagoContratoDesdeModal()">Cargar pago</button>
+            </div>
+            <div class="contract-summary-row">
+                <div class="summary-chip">
+                    <span>Pagado alquiler</span>
+                    <strong id="modal-pagado-alquiler">0</strong>
+                </div>
+                <div class="summary-chip">
+                    <span>Saldo alquiler</span>
+                    <strong id="modal-saldo-alquiler">0</strong>
+                </div>
+                <div class="summary-chip">
+                    <span>Pagado deposito</span>
+                    <strong id="modal-pagado-deposito">0</strong>
+                </div>
+                <div class="summary-chip">
+                    <span>Saldo deposito</span>
+                    <strong id="modal-saldo-deposito">0</strong>
+                </div>
+                <div class="summary-chip">
+                    <span>Total pagos</span>
+                    <strong id="modal-total-pagos">0</strong>
+                </div>
+            </div>
+            <div class="excel-container" style="margin-top: 0;">
+                <table class="excel-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha y hora</th>
+                            <th>Concepto</th>
+                            <th>Descripcion</th>
+                            <th>Medio</th>
+                            <th>Valor</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="modal-pagos-body">
+                        <tr><td colspan="5">Todavia no hay pagos cargados.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modal-reservas-contrato" class="modal-overlay">
+    <div class="modal-content modal-pagos-content">
+        <div class="dashboard-panel-header" style="margin-bottom: 16px;">
+            <div><h2>Reservas disponibles</h2></div>
+            <button class="btn-listado" type="button" onclick="cerrarModalReservasContrato()">Cerrar</button>
+        </div>
+        <div class="input-group" style="margin-bottom:16px;">
+            <label>Buscar reserva</label>
+            <input type="text" id="buscar-reserva-contrato" placeholder="Nombre, fecha o tipo" oninput="renderReservasDisponiblesContrato()">
+        </div>
+        <div id="lista-reservas-contrato" class="dashboard-list"></div>
+    </div>
+</div>

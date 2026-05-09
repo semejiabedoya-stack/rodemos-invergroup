@@ -1,0 +1,127 @@
+<section class="report-pos-layout">
+    <div class="card report-pos-panel">
+        <div class="report-top-actions">
+            <div class="report-type-switch">
+                <button class="btn-listado" type="button" id="rep-btn-pago" onclick="seleccionarTipoReporte('PAGO')">Pago</button>
+                <button class="btn-listado" type="button" id="rep-btn-cobro" onclick="seleccionarTipoReporte('COBRO')">Cobro</button>
+            </div>
+            <button class="btn-listado" type="button" onclick="abrirHistorialReportes()">Historial</button>
+        </div>
+        <input type="hidden" id="rep-tipo" value="">
+
+        <div class="report-flow">
+            <div class="input-group">
+                <label>Valor</label>
+                <input type="text" id="rep-valor" placeholder="Selecciona pago o cobro" disabled oninput="formatearCampoDinero(this); actualizarResumenReporte()">
+            </div>
+
+            <div class="input-group">
+                <label>Asociar cliente</label>
+                <div class="inline-picker">
+                    <input type="text" id="rep-cliente" readonly placeholder="Busca y carga un cliente">
+                    <button class="btn-listado" type="button" onclick="abrirSelectorEntidad('cliente', 'reporteCliente')">Buscar</button>
+                </div>
+            </div>
+
+            <input type="hidden" id="rep-asociacion" value="contrato">
+
+            <div class="input-group" id="rep-contrato-grupo">
+                <label>Asociar movimiento</label>
+                <select id="rep-contrato" onchange="mostrarHistorialContratoSeleccionado(); actualizarResumenReporte();">
+                    <option value="">Selecciona contrato</option>
+                </select>
+            </div>
+
+            <div class="input-group" id="rep-factura-grupo" style="display:none;">
+                <label>Factura</label>
+                <select id="rep-factura" onchange="mostrarHistorialContratoSeleccionado(); actualizarResumenReporte();">
+                    <option value="">Selecciona factura</option>
+                </select>
+            </div>
+
+            <div class="compact-form-grid">
+                <div class="input-group">
+                    <label>Concepto</label>
+                    <select id="rep-concepto" onchange="actualizarResumenReporte()">
+                        <option value="ALQUILER">Alquiler</option>
+                        <option value="DEPOSITO">Deposito</option>
+                        <option value="DANO">Dano</option>
+                        <option value="MULTA">Multa</option>
+                        <option value="RECARGO">Recargo</option>
+                        <option value="OTRO">Otro</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Referencia</label>
+                    <input type="text" id="rep-referencia" placeholder="Medio, comprobante o nota" oninput="actualizarResumenReporte()">
+                </div>
+                <div class="input-group">
+                    <label>Soporte</label>
+                    <input type="file" id="rep-soporte" accept="image/*,.pdf">
+                </div>
+                <div class="input-group">
+                    <label>Observacion</label>
+                    <input type="text" id="rep-observacion" placeholder="Detalle del movimiento" oninput="actualizarResumenReporte()">
+                </div>
+            </div>
+
+            <button class="btn-action" type="button" onclick="guardarReporteMovimiento()">Guardar movimiento</button>
+        </div>
+    </div>
+
+    <aside class="card report-receipt-panel">
+        <div id="rep-recibo-preview" class="report-live-receipt"></div>
+    </aside>
+</section>
+
+<div id="modal-historial-reportes" class="modal-overlay">
+    <div class="modal-content cliente-form-content cliente-history-modal-content">
+        <div class="dashboard-panel-header sticky-modal-header">
+            <div>
+                <h2>Historial de pagos y cobros</h2>
+                <p class="dashboard-subtitle">Consulta movimientos por fecha, cliente, contrato, moto o valor.</p>
+            </div>
+            <button class="btn-listado" type="button" onclick="cerrarHistorialReportes()">X</button>
+        </div>
+        <div class="compact-filter-grid">
+            <div class="input-group"><label>Desde</label><input type="date" id="hist-rep-desde" oninput="renderHistorialReportes()"></div>
+            <div class="input-group"><label>Hasta</label><input type="date" id="hist-rep-hasta" oninput="renderHistorialReportes()"></div>
+            <div class="input-group"><label>Cliente</label><input type="text" id="hist-rep-cliente" placeholder="Nombre o ID" oninput="renderHistorialReportes()"></div>
+            <div class="input-group"><label>Contrato</label><input type="text" id="hist-rep-contrato" placeholder="Codigo" oninput="renderHistorialReportes()"></div>
+            <div class="input-group"><label>Moto</label><input type="text" id="hist-rep-moto" placeholder="Moto" oninput="renderHistorialReportes()"></div>
+            <div class="input-group"><label>Valor</label><input type="text" id="hist-rep-valor" placeholder="0" oninput="formatearCampoDinero(this); renderHistorialReportes()"></div>
+        </div>
+        <div class="excel-container">
+            <table class="excel-table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Tipo</th>
+                        <th>Cliente</th>
+                        <th>Contrato</th>
+                        <th>Moto</th>
+                        <th>Concepto</th>
+                        <th>Referencia</th>
+                        <th>Valor</th>
+                        <th>Soporte</th>
+                        <th>Recibo</th>
+                    </tr>
+                </thead>
+                <tbody id="historial-reportes-body"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="modal-recibo-reporte" class="modal-overlay">
+    <div class="modal-content pos-receipt-modal">
+        <div class="dashboard-panel-header">
+            <div><h2>Recibo POS</h2></div>
+            <div class="doc-actions">
+                <button class="btn-listado" type="button" onclick="copiarReciboReporte()">Copiar imagen</button>
+                <button class="btn-listado" type="button" onclick="cerrarReciboReporte()">Cerrar</button>
+            </div>
+        </div>
+        <div id="recibo-reporte-preview"></div>
+    </div>
+</div>

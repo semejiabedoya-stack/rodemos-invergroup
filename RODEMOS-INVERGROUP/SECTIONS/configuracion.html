@@ -1,0 +1,81 @@
+<div id="config-login-panel" class="card" style="max-width: 480px; margin: 0 auto;">
+    <div class="input-group" style="margin-top: 20px;">
+        <label>Clave</label>
+        <input type="password" id="config-admin-clave" placeholder="Clave de administrador" oninput="autoIngresarConfiguracion()">
+    </div>
+    <button class="btn-action" style="margin-top: 20px;" onclick="ingresarConfiguracion()">Entrar</button>
+</div>
+
+<div id="config-admin-panel" style="display:none;">
+    <section class="admin-action-grid">
+        <button class="admin-action-card" type="button" onclick="abrirModalSeguridadAdmin()">
+            <strong>Seguridad</strong>
+            <span>Cambiar clave de administrador</span>
+        </button>
+        <button class="admin-action-card" type="button" onclick="abrirModalRutaAdmin()">
+            <strong>Ruta</strong>
+            <span id="config-ruta-actual">Seleccionar carpeta principal Rodemos</span>
+        </button>
+    </section>
+
+    <div class="card dashboard-chat-shell admin-chat-card">
+        <div class="dashboard-chat-layout">
+            <aside class="dashboard-chat-sidebar">
+                <div class="dashboard-folder-tabs">
+                    <button id="btn-folder-principal" class="btn-listado active" type="button" onclick="seleccionarCarpetaSolicitudes('principal')">Principal</button>
+                    <button id="btn-folder-cerrados" class="btn-listado" type="button" onclick="seleccionarCarpetaSolicitudes('cerrados')">Cerrados</button>
+                </div>
+                <input type="text" id="config-buscar-solicitud" placeholder="Buscar chat" oninput="renderSolicitudes(true)">
+                <div id="config-solicitudes-lista" class="dashboard-list"></div>
+            </aside>
+            <section class="dashboard-chat-main">
+                <div id="config-solicitud-detalle" class="dashboard-chat-whatsapp">Selecciona una solicitud para ver el historial.</div>
+                <form class="dashboard-message-form" onsubmit="responderSolicitud(event, 'admin')">
+                    <input type="text" id="config-respuesta-texto" placeholder="Escribe un mensaje">
+                    <button class="btn-action" type="submit">Enviar</button>
+                </form>
+            </section>
+        </div>
+        <button class="btn-listado" style="margin-top: 14px;" onclick="cerrarSesionConfiguracion()">Cerrar sesion</button>
+    </div>
+</div>
+
+<div id="modal-seguridad-admin" class="modal-overlay">
+    <div class="modal-content" style="max-width: 620px;">
+        <div class="dashboard-panel-header">
+            <div>
+                <h2>Seguridad</h2>
+                <p class="dashboard-subtitle">Cambia la clave usada para entrar a administracion y acciones protegidas.</p>
+            </div>
+            <button class="btn-listado" type="button" onclick="cerrarModalSeguridadAdmin()">X</button>
+        </div>
+        <div class="compact-form-grid">
+            <div class="input-group">
+                <label>Clave actual</label>
+                <input type="password" id="config-clave-actual" placeholder="Clave actual">
+            </div>
+            <div class="input-group">
+                <label>Nueva clave</label>
+                <input type="password" id="config-clave-nueva" placeholder="Nueva clave">
+            </div>
+        </div>
+        <button class="btn-action" type="button" onclick="cambiarClaveAdministrador()">Guardar clave</button>
+    </div>
+</div>
+
+<div id="modal-ruta-admin" class="modal-overlay">
+    <div class="modal-content" style="max-width: 620px;">
+        <div class="dashboard-panel-header">
+            <div>
+                <h2>Ruta principal</h2>
+                <p class="dashboard-subtitle">Selecciona la carpeta Rodemos. Dentro se crean automaticamente clientes, motos y contratos.</p>
+            </div>
+            <button class="btn-listado" type="button" onclick="cerrarModalRutaAdmin()">X</button>
+        </div>
+        <div class="summary-chip">
+            <span>Ruta actual</span>
+            <strong id="config-ruta-modal">Sin ruta seleccionada</strong>
+        </div>
+        <button class="btn-action" type="button" onclick="seleccionarRutaAdministracion()">Seleccionar carpeta Rodemos</button>
+    </div>
+</div>

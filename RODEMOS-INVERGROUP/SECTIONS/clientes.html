@@ -1,0 +1,260 @@
+<header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h1 style="font-weight: 800;">Clientes</h1>
+    <div class="doc-actions">
+        <button onclick="exportarExcel()" class="btn-listado">Exportar</button>
+        <button onclick="abrirModalImportarClientes()" class="btn-listado">Importar</button>
+    </div>
+</header>
+
+<div class="card cliente-admin-toolbar">
+    <div class="grid-inputs">
+        <div class="input-group"><label>Buscar por nombre</label><input type="text" id="cli-nombre" placeholder="Escribe el nombre del cliente" oninput="this.value = this.value.toUpperCase(); buscarCoincidencias();"></div>
+            <div class="input-group"><label>Buscar por numero ID</label><input type="text" id="cli-doc" placeholder="Numero de identificacion" oninput="buscarCoincidencias();"></div>
+    </div>
+
+    <div id="btn-principal-crear" style="display: none;">
+        <button onclick="mostrarFormularioNuevo()" class="btn-action dashboard-compact-action">Crear cliente con esta busqueda</button>
+    </div>
+</div>
+
+<section class="card cliente-listado-card">
+    <div class="dashboard-panel-header">
+        <div>
+            <h2>Listado de clientes</h2>
+            <p class="dashboard-subtitle" id="clientes-listado-resumen">Clientes registrados.</p>
+        </div>
+        <div id="clientes-listado-paginacion" class="dashboard-pagination"></div>
+    </div>
+    <div class="excel-container">
+        <table class="excel-table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Cedula</th>
+                    <th>Telefono</th>
+                    <th>Barrio</th>
+                    <th>Ciudad</th>
+                    <th>Estado</th>
+                    <th>Saldo</th>
+                    <th>Email</th>
+                    <th>Ficha</th>
+                </tr>
+            </thead>
+            <tbody id="clientes-listado-body"></tbody>
+        </table>
+    </div>
+</section>
+
+<div id="detalle-completo" class="modal-overlay cliente-form-modal" style="display: none;">
+    <div class="modal-content cliente-form-content">
+        <div class="dashboard-panel-header sticky-modal-header">
+            <div>
+                <h2 id="cliente-modal-titulo">Ficha del cliente</h2>
+                <p class="dashboard-subtitle">Completa o revisa la informacion del cliente.</p>
+            </div>
+            <button class="btn-listado" type="button" onclick="cerrarFormularioCliente()">X</button>
+        </div>
+
+        <div class="grid-inputs">
+            <div class="input-group"><label>Nombre completo</label><input type="text" id="cli-form-nombre" oninput="this.value = this.value.toUpperCase(); document.getElementById('cli-nombre').value = this.value;"></div>
+            <div class="input-group"><label>Numero ID</label><input type="text" id="cli-form-doc" oninput="document.getElementById('cli-doc').value = this.value;"></div>
+            <div class="input-group"><label>Tipo de ID</label><select id="cli-tipo-id"><option value="CC">CC</option><option value="CE">CE</option><option value="PASAPORTE">Pasaporte</option><option value="NIT">NIT</option><option value="OTRO">Otro</option></select></div>
+            <div class="input-group"><label>Telefono 1</label><div class="phone-field"><input type="text" id="cli-tel" placeholder="Por defecto Colombia"><button type="button" class="btn-icon phone-prefix-btn" onclick="abrirModalIndicativo('cli-tel')">+</button></div></div>
+            <div class="input-group"><label>Telefono 2</label><div class="phone-field"><input type="text" id="cli-tel2" placeholder="Por defecto Colombia"><button type="button" class="btn-icon phone-prefix-btn" onclick="abrirModalIndicativo('cli-tel2')">+</button></div></div>
+            <div class="input-group"><label>Direccion</label><input type="text" id="cli-dir"></div>
+            <div class="input-group"><label>Barrio</label><input type="text" id="cli-barrio"></div>
+            <div class="input-group"><label>Ciudad</label><input type="text" id="cli-ciudad"></div>
+            <div class="input-group"><label>Correo electronico</label><input type="email" id="cli-email"></div>
+            <div class="input-group"><label>Numero de dias de alquiler</label><input type="number" id="cli-dias-alquiler" min="0" placeholder="0"></div>
+            <div class="input-group"><label>Estado</label><select id="cli-estado"><option value="ACTIVO">Activo</option><option value="INACTIVO">Inactivo</option></select></div>
+        </div>
+
+        <div class="docs-header">
+            <div>
+                <h4 style="color: var(--primary-red); margin: 20px 0 6px; font-size: 0.8rem;">FOTOS Y DOCUMENTOS</h4>
+                <p class="docs-helper" id="docs-helper-text">Bloqueado hasta presionar MODIFICAR CLIENTE.</p>
+            </div>
+        </div>
+
+        <div id="documentos-panel" class="doc-list">
+            <div class="doc-item doc-card" data-doc-key="rostro">
+                <div class="doc-preview-wrap" onclick="openLightbox('rostro')">
+                    <img id="preview-rostro" class="doc-preview" alt="Preview rostro">
+                    <div id="empty-rostro" class="doc-preview-empty">Sin foto</div>
+                </div>
+                <div class="doc-meta">
+                    <strong>Foto rostro</strong>
+                    <small id="name-rostro">Sin archivo</small>
+                </div>
+                <div class="doc-actions">
+                    <button class="btn-icon" onclick="openLightbox('rostro')">Ver</button>
+                    <button class="btn-icon" data-requires-edit="true" onclick="abrirCamaraDocumento('base', 'rostro')" disabled>Camara</button>
+                    <button class="btn-icon" data-requires-edit="true" onclick="document.getElementById('f-rostro').click()" disabled>Subir</button>
+                    <input type="file" id="f-rostro" hidden accept="image/*" onchange="handleFile(this, 'rostro')">
+                </div>
+            </div>
+
+            <div class="doc-item doc-card" data-doc-key="ced1">
+                <div class="doc-preview-wrap" onclick="openLightbox('ced1')">
+                    <img id="preview-ced1" class="doc-preview" alt="Preview cedula frontal">
+                    <div id="empty-ced1" class="doc-preview-empty">Sin foto</div>
+                </div>
+                <div class="doc-meta">
+                    <strong>Cedula frontal</strong>
+                    <small id="name-ced1">Sin archivo</small>
+                </div>
+                <div class="doc-actions">
+                    <button class="btn-icon" onclick="openLightbox('ced1')">Ver</button>
+                    <button class="btn-icon" data-requires-edit="true" onclick="abrirCamaraDocumento('base', 'ced1')" disabled>Camara</button>
+                    <button class="btn-icon" data-requires-edit="true" onclick="document.getElementById('f-ced1').click()" disabled>Subir</button>
+                    <input type="file" id="f-ced1" hidden accept="image/*,.pdf" onchange="handleFile(this, 'ced1')">
+                </div>
+            </div>
+
+            <div class="doc-item doc-card" data-doc-key="ced2">
+                <div class="doc-preview-wrap" onclick="openLightbox('ced2')">
+                    <img id="preview-ced2" class="doc-preview" alt="Preview cedula trasera">
+                    <div id="empty-ced2" class="doc-preview-empty">Sin foto</div>
+                </div>
+                <div class="doc-meta">
+                    <strong>Cedula trasera</strong>
+                    <small id="name-ced2">Sin archivo</small>
+                </div>
+                <div class="doc-actions">
+                    <button class="btn-icon" onclick="openLightbox('ced2')">Ver</button>
+                    <button class="btn-icon" data-requires-edit="true" onclick="abrirCamaraDocumento('base', 'ced2')" disabled>Camara</button>
+                    <button class="btn-icon" data-requires-edit="true" onclick="document.getElementById('f-ced2').click()" disabled>Subir</button>
+                    <input type="file" id="f-ced2" hidden accept="image/*,.pdf" onchange="handleFile(this, 'ced2')">
+                </div>
+            </div>
+
+            <div class="doc-item doc-card" data-doc-key="lic1">
+                <div class="doc-preview-wrap" onclick="openLightbox('lic1')">
+                    <img id="preview-lic1" class="doc-preview" alt="Preview licencia frontal">
+                    <div id="empty-lic1" class="doc-preview-empty">Sin foto</div>
+                </div>
+                <div class="doc-meta">
+                    <strong>Licencia frontal</strong>
+                    <small id="name-lic1">Sin archivo</small>
+                </div>
+                <div class="doc-actions">
+                    <button class="btn-icon" onclick="openLightbox('lic1')">Ver</button>
+                    <button class="btn-icon" data-requires-edit="true" onclick="abrirCamaraDocumento('base', 'lic1')" disabled>Camara</button>
+                    <button class="btn-icon" data-requires-edit="true" onclick="document.getElementById('f-lic1').click()" disabled>Subir</button>
+                    <input type="file" id="f-lic1" hidden accept="image/*,.pdf" onchange="handleFile(this, 'lic1')">
+                </div>
+            </div>
+
+            <div class="doc-item doc-card" data-doc-key="lic2">
+                <div class="doc-preview-wrap" onclick="openLightbox('lic2')">
+                    <img id="preview-lic2" class="doc-preview" alt="Preview licencia trasera">
+                    <div id="empty-lic2" class="doc-preview-empty">Sin foto</div>
+                </div>
+                <div class="doc-meta">
+                    <strong>Licencia trasera</strong>
+                    <small id="name-lic2">Sin archivo</small>
+                </div>
+                <div class="doc-actions">
+                    <button class="btn-icon" onclick="openLightbox('lic2')">Ver</button>
+                    <button class="btn-icon" data-requires-edit="true" onclick="abrirCamaraDocumento('base', 'lic2')" disabled>Camara</button>
+                    <button class="btn-icon" data-requires-edit="true" onclick="document.getElementById('f-lic2').click()" disabled>Subir</button>
+                    <input type="file" id="f-lic2" hidden accept="image/*,.pdf" onchange="handleFile(this, 'lic2')">
+                </div>
+            </div>
+        </div>
+
+        <div id="otros-documentos-section" style="margin-top: 20px;">
+            <h4 style="margin-bottom: 12px;">Otros documentos</h4>
+            <div id="otros-documentos-list" class="doc-list"></div>
+        </div>
+
+        <button onclick="validarYGuardarCliente()" class="btn-action" style="margin-top: 30px;">GUARDAR REGISTRO</button>
+    </div>
+</div>
+
+<div id="area-coincidencias" style="display: none;"><h3 style="margin-bottom:15px; font-size: 1rem;">Coincidencias</h3><div id="lista-resultados"></div></div>
+
+<div id="modal-listado" class="modal-overlay">
+    <div class="modal-content" style="max-width: 900px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="color:var(--excel-green)">Listado Excel</h2>
+            <div>
+                <button onclick="exportarExcel()" class="btn-listado" style="display:inline-block">Exportar</button>
+                <button onclick="abrirModalImportarClientes()" class="btn-listado" style="display:inline-block">Importar</button>
+                <button onclick="activarModoEliminarClientes()" class="btn-listado" style="display:inline-block">Eliminar</button>
+                <button id="btn-confirmar-eliminar-clientes" onclick="eliminarClientesSeleccionados()" class="btn-action" style="display:none; width:auto; padding:10px 16px;">Eliminar seleccionados</button>
+                <button id="btn-cancelar-eliminar-clientes" onclick="cancelarModoEliminarClientes()" class="btn-listado" style="display:none">Cancelar</button>
+                <button onclick="cerrarModales()" class="btn-listado" style="display:inline-block">X</button>
+            </div>
+        </div>
+        <input type="file" id="input-importar-clientes" hidden accept=".csv" onchange="importarClientes(this)">
+        <div class="excel-container"><table class="excel-table"><thead><tr><th id="th-eliminar-clientes" style="display:none; width:48px;">Sel</th><th>Nombre</th><th>CC</th><th>Tel</th><th>Barrio</th><th>Ficha</th></tr></thead><tbody id="tabla-excel-body"></tbody></table></div>
+    </div>
+</div>
+
+<div id="modal-importar-clientes" class="modal-overlay">
+    <div class="modal-content" style="max-width: 520px;">
+        <div class="dashboard-panel-header">
+            <div>
+                <h2>Importar clientes</h2>
+                <p class="dashboard-subtitle">Carga el archivo CSV o descarga la plantilla para diligenciarla.</p>
+            </div>
+            <button class="btn-listado" type="button" onclick="cerrarModalImportarClientes()">X</button>
+        </div>
+        <div class="doc-actions" style="justify-content:center;">
+            <button class="btn-action" type="button" onclick="cargarArchivoClientes()">Cargar archivo</button>
+            <button class="btn-listado" type="button" onclick="descargarPlantillaClientes()">Descargar plantilla</button>
+        </div>
+    </div>
+</div>
+
+<div id="modal-indicativo-telefono" class="modal-overlay">
+    <div class="modal-content" style="max-width: 420px;">
+        <div class="dashboard-panel-header">
+            <div>
+                <h2>Indicativo internacional</h2>
+                <p class="dashboard-subtitle">Colombia queda por defecto. Usa este boton solo si el numero es internacional.</p>
+            </div>
+            <button class="btn-listado" type="button" onclick="cerrarModalIndicativo()">X</button>
+        </div>
+        <div class="input-group">
+            <label>Indicativo</label>
+            <div class="phone-prefix-editor"><span>+</span><input type="text" id="telefono-indicativo-valor" placeholder="Indicativo" inputmode="numeric"></div>
+        </div>
+        <button class="btn-action" type="button" onclick="aplicarIndicativoTelefono()">Aceptar</button>
+    </div>
+</div>
+
+<div id="modal-qr" class="modal-overlay">
+    <div class="modal-content" style="max-width: 300px; text-align: center;">
+        <h3 id="qr-desc"></h3>
+        <div id="qr-img-placeholder" style="margin: 20px 0;"></div>
+        <button onclick="cerrarModales()" class="btn-action">CERRAR</button>
+    </div>
+</div>
+
+<div id="modal-otro-documento" class="modal-overlay">
+    <div class="modal-content">
+        <h2 style="font-weight: 800; margin-bottom: 10px;">Nuevo documento</h2>
+        <p style="color: #666; margin-bottom: 15px;">Escribe el nombre con el que quieres guardar este documento.</p>
+        <div class="input-group">
+            <label>Nombre del documento</label>
+            <input type="text" id="otro-doc-nombre" placeholder="Ej: contrato laboral">
+        </div>
+        <button class="btn-action" style="margin-top: 20px;" onclick="confirmarNuevoDocumento()">GUARDAR NOMBRE</button>
+        <button class="btn-listado" style="margin-top: 12px; width: 100%; justify-content: center;" onclick="cerrarModalNuevoDocumento()">CANCELAR</button>
+    </div>
+</div>
+
+<div id="modal-camara-pc" class="modal-overlay">
+    <div class="modal-content" style="max-width: 720px;">
+        <h2 style="font-weight: 800; margin-bottom: 10px;">Camara del PC</h2>
+        <p id="camara-doc-label" style="color: #666; margin-bottom: 15px;">Captura una foto para este documento.</p>
+        <video id="camara-video" autoplay playsinline style="width: 100%; border-radius: 18px; background: #111;"></video>
+        <canvas id="camara-canvas" hidden></canvas>
+        <div class="doc-actions" style="margin-top: 18px;">
+            <button class="btn-icon" onclick="capturarFotoDesdeCamara()">Tomar foto</button>
+            <button class="btn-icon" onclick="cerrarCamaraDocumento()">Cerrar</button>
+        </div>
+    </div>
+</div>

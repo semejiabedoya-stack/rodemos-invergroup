@@ -1,0 +1,183 @@
+<div class="mobile-upload-shell">
+    <header class="mobile-upload-header">
+        <h2>Captura de documentos</h2>
+        <p id="info-cliente"></p>
+    </header>
+
+    <div class="mobile-upload-list">
+        <div class="upload-field" id="box-perfil">
+            <label>Foto rostro</label>
+            <input type="file" accept="image/*" capture="user" onchange="inputCambio(this, 'perfil')">
+            <div class="status-dot">Pendiente</div>
+        </div>
+
+        <div class="upload-field" id="box-ced1">
+            <label>Cedula frontal</label>
+            <input type="file" accept="image/*" capture="environment" onchange="inputCambio(this, 'ced1')">
+            <div class="status-dot">Pendiente</div>
+        </div>
+
+        <div class="upload-field" id="box-ced2">
+            <label>Cedula trasera</label>
+            <input type="file" accept="image/*" capture="environment" onchange="inputCambio(this, 'ced2')">
+            <div class="status-dot">Pendiente</div>
+        </div>
+
+        <div class="upload-field" id="box-lic1">
+            <label>Licencia frontal</label>
+            <input type="file" accept="image/*" capture="environment" onchange="inputCambio(this, 'lic1')">
+            <div class="status-dot">Pendiente</div>
+        </div>
+
+        <div class="upload-field" id="box-lic2">
+            <label>Licencia trasera</label>
+            <input type="file" accept="image/*" capture="environment" onchange="inputCambio(this, 'lic2')">
+            <div class="status-dot">Pendiente</div>
+        </div>
+    </div>
+
+    <div class="mobile-upload-footer">
+        <button onclick="enviarAlPC()" id="btn-send">Cargar al computador</button>
+    </div>
+</div>
+
+<style>
+    .mobile-upload-shell {
+        min-height: 100vh;
+        box-sizing: border-box;
+        padding: 18px;
+        background: #f3f6f9;
+        color: #17212b;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    .mobile-upload-header {
+        background: #06334f;
+        color: #ffffff;
+        border-radius: 10px;
+        padding: 18px;
+        margin-bottom: 14px;
+    }
+
+    .mobile-upload-header h2 {
+        margin: 0;
+        font-size: 1.25rem;
+    }
+
+    .mobile-upload-header p {
+        margin: 6px 0 0;
+        color: #c9e8fa;
+        font-weight: 700;
+    }
+
+    .mobile-upload-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .upload-field {
+        position: relative;
+        background: #ffffff;
+        border: 1px solid #d8e0e8;
+        padding: 18px;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        min-height: 72px;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+    }
+
+    .upload-field label {
+        font-weight: 800;
+        font-size: 0.95rem;
+        color: #17212b;
+    }
+
+    .upload-field input[type="file"] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        z-index: 10;
+    }
+
+    .upload-field.success {
+        background: #ecf8f1;
+        border-color: #83caa4;
+    }
+
+    .status-dot {
+        border-radius: 999px;
+        background: #edf3f8;
+        color: #637083;
+        padding: 7px 10px;
+        font-size: 0.76rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .upload-field.success .status-dot {
+        background: #178a55;
+        color: #ffffff;
+    }
+
+    .mobile-upload-footer {
+        margin-top: 18px;
+        padding-bottom: 34px;
+    }
+
+    #btn-send {
+        width: 100%;
+        padding: 16px;
+        background: #1098e8;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 800;
+        font-size: 1rem;
+    }
+</style>
+
+<script>
+    let cacheFotos = {};
+    const urlParams = new URLSearchParams(window.location.search);
+    const idCli = urlParams.get('id');
+
+    document.getElementById('info-cliente').innerText = idCli ? "CC: " + idCli : "ERROR: ESCANEA DE NUEVO";
+
+    function inputCambio(input, clave) {
+        if (input.files && input.files[0]) {
+            const currentBox = document.getElementById('box-' + clave);
+            currentBox.querySelector('.status-dot').innerText = "Procesando";
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                cacheFotos[clave] = e.target.result;
+                currentBox.classList.add('success');
+                currentBox.querySelector('.status-dot').innerText = "Listo";
+                console.log("Foto guardada en memoria: " + clave);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function enviarAlPC() {
+        if (Object.keys(cacheFotos).length === 0) {
+            alert("No has tomado ninguna foto todavia.");
+            return;
+        }
+
+        const canal = new BroadcastChannel('canal_rodemos');
+        canal.postMessage({
+            id: idCli,
+            fotos: cacheFotos
+        });
+
+        const btn = document.getElementById('btn-send');
+        btn.innerText = "Cargado en PC";
+        btn.style.background = "#178a55";
+
+        alert("Las fotos se enviaron. Revisa el computador ahora.");
+    }
+</script>

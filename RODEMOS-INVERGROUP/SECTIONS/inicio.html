@@ -1,0 +1,218 @@
+<section class="dashboard-grid dashboard-kpi-grid">
+    <article class="dashboard-card dashboard-summary dashboard-summary-action">
+        <span>Reservas de hoy</span>
+        <strong id="resumen-reservas-hoy">0</strong>
+        <button class="btn-listado" type="button" onclick="abrirPanelReservasInicio()">Revisar</button>
+    </article>
+    <article class="dashboard-card dashboard-summary dashboard-summary-action">
+        <span>Mensajes pendientes</span>
+        <strong id="resumen-mensajes-pendientes">0</strong>
+        <button class="btn-listado" type="button" onclick="enfocarCentroMensajes()">Ver mensajes</button>
+    </article>
+    <article class="dashboard-card dashboard-summary dashboard-summary-action dashboard-summary-alert">
+        <span>Alertas de vencimientos</span>
+        <strong id="resumen-alertas-vencimientos">0</strong>
+        <button class="btn-action dashboard-alert-btn" type="button" onclick="abrirAlertasVencimientos()">Ver</button>
+    </article>
+</section>
+
+<div class="modal-overlay" id="panel-alertas-vencimientos">
+    <div class="modal-content cliente-form-content dashboard-alert-panel">
+        <div class="dashboard-panel-header sticky-modal-header">
+            <div>
+                <h2>Vehiculos proximos a vencer</h2>
+                <p class="dashboard-subtitle">SOAT y tecnomecanica vencidos o dentro de los proximos 5 dias.</p>
+            </div>
+            <button class="btn-listado" type="button" onclick="cerrarAlertasVencimientos()">Cerrar</button>
+        </div>
+        <div id="alertas-vencimientos-lista" class="dashboard-list"></div>
+    </div>
+</div>
+
+<section class="dashboard-grid dashboard-main-grid dashboard-main-grid-wide">
+    <div class="modal-overlay" id="panel-reservas-inicio">
+        <div class="modal-content cliente-form-content">
+            <div class="dashboard-panel-header sticky-modal-header">
+                <div>
+                    <h2>Historial de reservas</h2>
+                    <p id="reserva-rango" class="dashboard-subtitle"></p>
+                </div>
+                <div class="doc-actions">
+                    <button class="btn-listado active" type="button" id="btn-reservas-pendientes" onclick="seleccionarVistaReservas('pendientes')">Pendientes</button>
+                    <button class="btn-listado" type="button" id="btn-reservas-finalizadas" onclick="seleccionarVistaReservas('finalizadas')">Finalizadas</button>
+                    <button id="btn-generar-reserva" class="btn-action dashboard-compact-action" type="button" onclick="abrirModalReserva()">Agregar reserva</button>
+                    <button class="btn-listado" type="button" onclick="cerrarPanelReservasInicio()">Cerrar</button>
+                </div>
+            </div>
+
+            <div id="reserva-lista" class="dashboard-list"></div>
+
+            <div class="dashboard-subsection">
+                <div class="dashboard-panel-header">
+                    <div>
+                        <h3>Proximas reservas</h3>
+                        <p class="dashboard-subtitle">Listado paginado de reservas.</p>
+                    </div>
+                    <div id="reservas-paginacion" class="dashboard-pagination"></div>
+                </div>
+                <div class="excel-container">
+                    <table class="excel-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Cliente</th>
+                            <th>Tipo</th>
+                            <th>Moto</th>
+                            <th>Abono</th>
+                            <th>Contrato</th>
+                                <th>Soporte</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reservas-futuras-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <article class="dashboard-card dashboard-panel dashboard-chat-shell" id="centro-mensajes">
+        <div class="dashboard-chat-layout">
+            <aside class="dashboard-chat-sidebar">
+                <section class="dashboard-chat-block">
+                    <div class="dashboard-panel-header" style="margin-bottom: 10px;">
+                        <div class="dashboard-folder-tabs dashboard-folder-tabs-row">
+                            <button class="btn-listado" type="button" onclick="abrirModalSolicitud()">Crear</button>
+                            <button class="btn-listado active" type="button" id="btn-folder-principal" onclick="seleccionarCarpetaSolicitudes('principal')">Principal</button>
+                            <button class="btn-listado" type="button" id="btn-folder-cerrados" onclick="seleccionarCarpetaSolicitudes('cerrados')">Cerrados</button>
+                        </div>
+                    </div>
+                    <input type="text" id="solicitudes-busqueda" placeholder="Buscar chat" oninput="renderSolicitudes(false)">
+                    <div id="solicitudes-lista" class="dashboard-list"></div>
+                </section>
+            </aside>
+
+            <section class="dashboard-chat-main">
+                <div id="solicitud-detalle" class="dashboard-chat-whatsapp">Selecciona una solicitud para ver el historial.</div>
+
+                <form id="form-respuesta-asesora" class="dashboard-chat-reply" onsubmit="responderSolicitud(event, 'asesora')">
+                    <input type="text" id="respuesta-asesora" placeholder="Escribe un mensaje">
+                    <input type="file" id="respuesta-asesora-imagen" accept="image/*">
+                    <button class="btn-action dashboard-chat-send" type="submit">Enviar</button>
+                </form>
+            </section>
+        </div>
+    </article>
+</section>
+
+<div id="modal-reserva" class="modal-overlay">
+    <div class="modal-content" style="max-width: 760px;">
+        <div class="dashboard-panel-header" style="margin-bottom: 18px;">
+            <div>
+                <h2 id="modal-reserva-titulo">Crear reserva</h2>
+                <p class="dashboard-subtitle">Completa los datos y guarda la reserva.</p>
+            </div>
+            <button class="btn-listado" type="button" onclick="cerrarModalReserva()">X</button>
+        </div>
+
+        <form id="form-reserva" class="dashboard-form" onsubmit="guardarReserva(event)">
+            <div class="grid-inputs">
+                <div class="input-group">
+                    <label>Fecha</label>
+                    <input type="date" id="reserva-fecha">
+                </div>
+                <div class="input-group">
+                    <label>Hora</label>
+                    <input type="time" id="reserva-hora">
+                </div>
+                <div class="input-group">
+                    <label>Cliente</label>
+                    <input type="text" id="reserva-cliente" placeholder="Nombre del cliente">
+                </div>
+                <div class="input-group">
+                    <label>Tipo</label>
+                    <input type="text" id="reserva-tipo" placeholder="Entrega, visita, firma...">
+                </div>
+                <div class="input-group">
+                    <label>Moto reservada</label>
+                    <div class="inline-picker">
+                        <input type="text" id="reserva-moto" readonly placeholder="Selecciona una moto">
+                        <button class="btn-listado" type="button" onclick="abrirSelectorEntidad('moto', 'reservaMoto')">Buscar</button>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Abono</label>
+                    <input type="number" id="reserva-abono" placeholder="0">
+                </div>
+                <div class="input-group">
+                    <label>Soporte del abono</label>
+                    <input type="file" id="reserva-soporte" accept="image/*,.pdf">
+                </div>
+            </div>
+            <button class="btn-action" type="submit">Guardar reserva</button>
+        </form>
+    </div>
+</div>
+
+<div id="modal-recibo-reserva" class="modal-overlay">
+    <div class="modal-content" style="max-width: 860px;">
+        <div class="dashboard-panel-header" style="margin-bottom: 16px;">
+            <div><h2>Recibo de reserva</h2></div>
+            <div class="doc-actions">
+                <button class="btn-listado" type="button" onclick="copiarTextoReciboReserva()">Copiar texto</button>
+                <button class="btn-listado" type="button" onclick="cerrarModalReciboReserva()">Cerrar</button>
+            </div>
+        </div>
+        <div id="recibo-reserva-preview" class="excel-container" style="margin-top:0;"></div>
+    </div>
+</div>
+
+<div id="modal-solicitud" class="modal-overlay">
+    <div class="modal-content" style="max-width: 700px;">
+        <div class="dashboard-panel-header" style="margin-bottom: 18px;">
+            <div>
+                <h2>Crear solicitud</h2>
+                <p class="dashboard-subtitle">Enviale una solicitud nueva al administrador.</p>
+            </div>
+            <button class="btn-listado" type="button" onclick="cerrarModalSolicitud()">X</button>
+        </div>
+        <form id="form-solicitud-asesora" class="dashboard-form" onsubmit="crearSolicitud(event)">
+            <div class="grid-inputs">
+                <div class="input-group">
+                    <label>Asunto</label>
+                    <input type="text" id="solicitud-asunto" placeholder="Ej: aprobacion de reserva">
+                </div>
+                <div class="input-group">
+                    <label>Cliente</label>
+                    <input type="text" id="solicitud-cliente" list="solicitud-clientes-lista" placeholder="Selecciona cliente" oninput="actualizarContratosSolicitud()">
+                    <datalist id="solicitud-clientes-lista"></datalist>
+                </div>
+                <div class="input-group">
+                    <label>Contrato</label>
+                    <select id="solicitud-contrato">
+                        <option value="">Sin contrato asociado</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Proceso</label>
+                    <select id="solicitud-proceso">
+                        <option value="GENERAL">General</option>
+                        <option value="CONTRATO">Contrato</option>
+                        <option value="CAMBIO">Cambio</option>
+                        <option value="FINALIZACION">Finalizacion</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Mensaje inicial</label>
+                    <input type="text" id="solicitud-mensaje" placeholder="Ej: necesito aprobacion para hoy a las 4 pm">
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Adjuntar imagen</label>
+                <input type="file" id="solicitud-imagen" accept="image/*">
+            </div>
+            <button class="btn-action" type="submit">Crear solicitud</button>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,159 @@
+<section class="dashboard-grid dashboard-kpi-grid">
+    <article class="dashboard-card dashboard-summary">
+        <span>Contratos recurrentes</span>
+        <strong id="fact-kpi-contratos">0</strong>
+    </article>
+    <article class="dashboard-card dashboard-summary">
+        <span>Facturas pendientes</span>
+        <strong id="fact-kpi-pendientes">0</strong>
+    </article>
+    <article class="dashboard-card dashboard-summary dashboard-summary-alert">
+        <span>Saldo pendiente</span>
+        <strong id="fact-kpi-saldo">0</strong>
+    </article>
+</section>
+
+<section class="card">
+    <div class="compact-filter-grid facturas-filter-grid">
+        <div class="input-group"><label>Buscar</label><input type="text" id="fact-busqueda" placeholder="Cliente, contrato o moto" oninput="renderFacturas()"></div>
+        <div class="input-group"><label>Estado factura</label><select id="fact-filtro-estado" onchange="renderFacturas()"><option value="">Todas</option><option value="PENDIENTE" selected>Pendientes</option><option value="EMITIDA">Emitidas</option></select></div>
+    </div>
+    <div class="excel-container">
+        <table class="excel-table">
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Placa moto</th>
+                    <th>Contrato</th>
+                    <th>Saldo total</th>
+                    <th>Saldo pagado</th>
+                    <th>Adeudado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="facturas-contratos-body"></tbody>
+        </table>
+    </div>
+</section>
+
+<section class="card" id="facturas-detalle-card" style="display:none;">
+    <div class="dashboard-panel-header">
+        <div>
+            <h2 id="fact-detalle-titulo">Historial de facturas</h2>
+            <p class="dashboard-subtitle" id="fact-detalle-subtitulo"></p>
+        </div>
+        <div class="doc-actions">
+            <button class="btn-action dashboard-compact-action" type="button" onclick="abrirGenerarFacturaSeleccionada()">Generar siguiente factura</button>
+            <button class="btn-listado" type="button" onclick="cerrarDetalleFacturas()">Cerrar</button>
+        </div>
+    </div>
+    <div class="excel-container">
+        <table class="excel-table">
+            <thead>
+                <tr>
+                    <th>Factura</th>
+                    <th>Desde</th>
+                    <th>Hasta</th>
+                    <th>Moto</th>
+                    <th>Valor</th>
+                    <th>Saldo anterior</th>
+                    <th>Pagado</th>
+                    <th>Restante</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="facturas-lista-body"></tbody>
+        </table>
+    </div>
+</section>
+
+<div id="modal-generar-factura" class="modal-overlay">
+    <div class="modal-content" style="max-width: 640px;">
+        <div class="dashboard-panel-header">
+            <div>
+                <h2>Generar siguiente factura</h2>
+                <p class="dashboard-subtitle" id="fact-generar-subtitulo"></p>
+            </div>
+            <button class="btn-listado" type="button" onclick="cerrarModalGenerarFactura()">X</button>
+        </div>
+        <div class="compact-form-grid">
+            <div class="input-group">
+                <label>Desde</label>
+                <input type="date" id="fact-generar-desde">
+            </div>
+            <div class="input-group">
+                <label>Hasta</label>
+                <input type="date" id="fact-generar-hasta">
+            </div>
+            <div class="input-group">
+                <label>Valor de cobro</label>
+                <input type="text" id="fact-generar-valor" placeholder="0" oninput="formatearCampoDinero(this)">
+            </div>
+            <div class="input-group">
+                <label>Saldo anterior</label>
+                <input type="text" id="fact-generar-saldo" readonly>
+            </div>
+        </div>
+        <button class="btn-action" type="button" onclick="generarFacturaContratoSeleccionado()">Crear factura</button>
+    </div>
+</div>
+
+<div id="modal-pago-factura" class="modal-overlay">
+    <div class="modal-content" style="max-width: 680px;">
+        <div class="dashboard-panel-header">
+            <div>
+                <h2>Reportar pago o recargo</h2>
+                <p class="dashboard-subtitle" id="fact-pago-subtitulo"></p>
+            </div>
+            <button class="btn-listado" type="button" onclick="cerrarModalPagoFactura()">X</button>
+        </div>
+        <div class="compact-form-grid">
+            <div class="input-group">
+                <label>Fecha del pago</label>
+                <input type="date" id="fact-pago-fecha">
+            </div>
+            <div class="input-group">
+                <label>Medio de pago</label>
+                <select id="fact-pago-medio">
+                    <option value="Efectivo">Efectivo</option>
+                    <option value="Transferencia">Transferencia</option>
+                    <option value="Nequi">Nequi</option>
+                    <option value="Daviplata">Daviplata</option>
+                    <option value="Tarjeta">Tarjeta</option>
+                    <option value="Otro">Otro</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Valor pagado</label>
+                <input type="text" id="fact-pago-valor" placeholder="0" oninput="formatearCampoDinero(this)">
+            </div>
+            <div class="input-group">
+                <label>Recargo / cobro extra</label>
+                <input type="text" id="fact-pago-recargo" placeholder="0" oninput="formatearCampoDinero(this)">
+            </div>
+            <div class="input-group">
+                <label>Referencia</label>
+                <input type="text" id="fact-pago-referencia" placeholder="Comprobante, nota, dano...">
+            </div>
+            <div class="input-group">
+                <label>Soporte</label>
+                <input type="file" id="fact-pago-soporte" accept="image/*,.pdf">
+            </div>
+        </div>
+        <button class="btn-action" type="button" onclick="guardarPagoFactura()">Guardar movimiento</button>
+    </div>
+</div>
+
+<div id="modal-recibo-factura" class="modal-overlay">
+    <div class="modal-content pos-receipt-modal">
+        <div class="dashboard-panel-header">
+            <div><h2>Recibo</h2></div>
+            <div class="doc-actions">
+                <button class="btn-listado" type="button" onclick="copiarTextoReciboFactura()">Copiar para WhatsApp</button>
+                <button class="btn-listado" type="button" onclick="cerrarModalReciboFactura()">Cerrar</button>
+            </div>
+        </div>
+        <div id="recibo-factura-preview" style="margin-top:0;"></div>
+    </div>
+</div>

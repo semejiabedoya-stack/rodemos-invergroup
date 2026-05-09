@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Rodemos PC</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <aside class="sidebar" id="main-sidebar">
+        <div class="logo"><h2>RODEMOS</h2></div>
+        <nav>
+            <button class="nav-btn active" data-page="inicio" onclick="loadPage('inicio')">Inicio</button>
+            <button class="nav-btn" data-page="clientes" onclick="loadPage('clientes')">Clientes</button>
+            <button class="nav-btn" data-page="motos" onclick="loadPage('motos')">Motos</button>
+            <button class="nav-btn" data-page="contratos" onclick="loadPage('contratos')">Contratos</button>
+            <button class="nav-btn" data-page="facturas" onclick="loadPage('facturas')">Facturas</button>
+            <button class="nav-btn" data-page="reportes" onclick="loadPage('reportes')">Reportes</button>
+            <button class="nav-btn" data-page="configuracion" onclick="loadPage('configuracion')">Administracion</button>
+        </nav>
+    </aside>
+
+    <main class="main-content"><div id="content-area"></div></main>
+
+    <div id="modal-alerta" class="modal-overlay">
+        <div class="modal-content">
+            <div style="font-size: 40px; margin-bottom: 15px;">!</div>
+            <h2 id="alerta-titulo" style="font-weight: 800; margin-bottom: 10px;">AVISO</h2>
+            <p id="alerta-mensaje" style="color: #666; margin-bottom: 25px; line-height: 1.5;"></p>
+            <button class="btn-action" onclick="cerrarAlerta()">ENTENDIDO / OK</button>
+        </div>
+    </div>
+
+    <div id="lightbox" onclick="this.style.display='none'">
+        <img id="img-lightbox" src="" style="max-width: 90%; max-height: 90%; border-radius: 10px;">
+    </div>
+
+    <div id="modal-selector-global" class="modal-overlay">
+        <div class="modal-content" style="max-width: 980px;">
+            <div class="dashboard-panel-header" style="margin-bottom: 18px;">
+                <div>
+                    <h2 id="selector-titulo">Seleccionar</h2>
+                    <p class="dashboard-subtitle">Busca y confirma la seleccion.</p>
+                </div>
+                <button class="btn-listado" onclick="cerrarSelectorEntidad()">X</button>
+            </div>
+            <div class="input-group">
+                <label>Busqueda</label>
+                <input type="text" id="selector-busqueda" oninput="renderSelectorEntidad()" placeholder="Escribe para buscar">
+            </div>
+            <div id="selector-resultados" class="dashboard-list" style="margin-top: 18px;"></div>
+        </div>
+    </div>
+
+    <div id="modal-confirmacion-seleccion" class="modal-overlay">
+        <div class="modal-content" style="max-width: 520px; text-align: center;">
+            <h2 id="confirmacion-titulo" style="font-weight: 800; margin-bottom: 10px;">Confirmar seleccion</h2>
+            <p id="confirmacion-texto" style="color: #666; margin-bottom: 22px; line-height: 1.5;"></p>
+            <div class="doc-actions" style="justify-content: center;">
+                <button class="btn-action" style="max-width: 220px;" onclick="confirmarSeleccionPendiente()">CONFIRMAR</button>
+                <button class="btn-listado" onclick="cerrarConfirmacionSeleccion()">CANCELAR</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-clave-admin" class="modal-overlay">
+        <div class="modal-content admin-key-modal">
+            <div class="dashboard-panel-header">
+                <div>
+                    <h2>Clave de administrador</h2>
+                    <p class="dashboard-subtitle" id="admin-key-message">Confirma la clave para continuar.</p>
+                </div>
+                <button class="btn-listado" type="button" onclick="cerrarModalClaveAdmin()">X</button>
+            </div>
+            <div class="input-group">
+                <label>Clave</label>
+                <input type="password" id="admin-key-input" placeholder="Clave de administrador" oninput="autoConfirmarClaveAdmin()">
+            </div>
+            <div class="doc-actions" style="justify-content:flex-end; margin-top:18px;">
+                <button class="btn-listado" type="button" onclick="cerrarModalClaveAdmin()">Cancelar</button>
+                <button class="btn-action" type="button" onclick="confirmarModalClaveAdmin()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
